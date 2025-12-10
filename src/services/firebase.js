@@ -5,14 +5,15 @@ import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
 // Your web app's Firebase configuration
+// Your web app's Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyDMW5Dlm774c55Qavw8-hxEKImhxNLezlM",
-    authDomain: "soulroom-74c97.firebaseapp.com",
-    projectId: "soulroom-74c97",
-    storageBucket: "soulroom-74c97.firebasestorage.app",
-    messagingSenderId: "240813368074",
-    appId: "1:240813368074:web:c32c1ce196bfa4916950f3",
-    measurementId: "G-8JQYLDDF0R"
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID,
+    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase

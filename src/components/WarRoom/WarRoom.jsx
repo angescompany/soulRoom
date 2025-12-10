@@ -195,18 +195,7 @@ const WarRoom = ({ timer, onClose, initialGuideId, onGuideSelect }) => {
     `;
 
     return (
-        <div style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            background: 'linear-gradient(135deg, #1a0b2e 0%, #000000 100%)',
-            zIndex: 1000,
-            display: 'flex',
-            flexDirection: 'column',
-            padding: '20px'
-        }}>
+        <div className="war-room-container">
             <style>{heartbeatStyle}</style>
 
             {/* Default War Room View (Visible only when no guide is selected or explicitly actively reading) */}
@@ -271,11 +260,11 @@ const WarRoom = ({ timer, onClose, initialGuideId, onGuideSelect }) => {
 
                         <div style={{ display: 'flex', gap: '20px', marginBottom: '30px' }}>
                             {timer.isRunning ? (
-                                <button onClick={timer.pause} style={{ width: '70px', height: '70px', borderRadius: '50%', background: 'var(--primary)', border: 'none', color: '#fff', fontSize: '1.5rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 20px rgba(157, 80, 187, 0.5)' }}>
+                                <button onClick={timer.pause} className="circle-btn-lg">
                                     <FaPause />
                                 </button>
                             ) : (
-                                <button onClick={timer.resume} style={{ width: '70px', height: '70px', borderRadius: '50%', background: 'var(--primary)', border: 'none', color: '#fff', fontSize: '1.5rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 20px rgba(157, 80, 187, 0.5)' }}>
+                                <button onClick={timer.resume} className="circle-btn-lg">
                                     <FaPlay />
                                 </button>
                             )}
@@ -390,19 +379,17 @@ const WarRoom = ({ timer, onClose, initialGuideId, onGuideSelect }) => {
                     </div>
 
                     {/* Scrollable Content (Full Height) */}
-                    <div style={{
-                        flex: 1,
-                        overflowY: 'auto',
-                        padding: '10px 5px 120px 5px', /* Increased bottom padding to clear nav */
-                        scrollbarWidth: 'none',
-                        msOverflowStyle: 'none',
-                        WebkitOverflowScrolling: 'touch'
-                    }}>
-                        <style>{`
-                            div::-webkit-scrollbar {
-                                display: none;
-                            }
-                        `}</style>
+                    {/* Scrollable Content (Full Height) */}
+                    <div
+                        className="scroll-hide"
+                        style={{
+                            flex: 1,
+                            overflowY: 'auto',
+                            padding: '10px 5px 120px 5px', /* Increased bottom padding to clear nav */
+                            WebkitOverflowScrolling: 'touch'
+                        }}
+                    >
+                        {/* Inline style block removed as class handles it */}
                         {guideMode === 'simple' ? (
                             <div style={{ display: 'grid', gap: '15px' }}>
                                 {selectedGuide.simple.map((item, idx) => (
@@ -428,18 +415,7 @@ const WarRoom = ({ timer, onClose, initialGuideId, onGuideSelect }) => {
 
             {/* Guide Selector Modal (Same as before) */}
             {showGuideSelector && (
-                <div style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    background: 'var(--bg-dark)',
-                    zIndex: 2000,
-                    padding: '20px',
-                    display: 'flex',
-                    flexDirection: 'column'
-                }}>
+                <div className="guide-selector-modal">
                     <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px', position: 'relative', flexShrink: 0 }}>
                         <button
                             onClick={() => setShowGuideSelector(false)}
@@ -509,19 +485,7 @@ const WarRoom = ({ timer, onClose, initialGuideId, onGuideSelect }) => {
 const AudioButton = ({ icon, label, active, onClick }) => (
     <button
         onClick={onClick}
-        style={{
-            background: active ? 'var(--primary)' : 'rgba(255,255,255,0.05)',
-            border: active ? 'none' : '1px solid rgba(255,255,255,0.1)',
-            borderRadius: '10px',
-            padding: '10px',
-            color: '#fff',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '8px',
-            cursor: 'pointer',
-            transition: 'all 0.2s'
-        }}
+        className={`audio-btn ${active ? 'active' : ''}`}
     >
         <span style={{ fontSize: '1.2rem' }}>{icon}</span>
         <span style={{ fontSize: '0.7rem' }}>{label}</span>

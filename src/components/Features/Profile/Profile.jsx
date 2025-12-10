@@ -110,20 +110,7 @@ const Profile = () => {
         <div style={{ paddingBottom: '40px' }}>
             {/* Header / Avatar */}
             <div style={{ textAlign: 'center', marginBottom: '30px', paddingTop: '20px' }}>
-                <div style={{
-                    position: 'relative',
-                    width: '120px',
-                    height: '120px',
-                    margin: '0 auto 15px',
-                    borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
-                    border: '4px solid rgba(255,255,255,0.1)',
-                    overflow: 'hidden'
-                }}>
+                <div className="profile-avatar-container">
                     {user.avatar && !imageError ? (
                         <img
                             src={user.avatar}
@@ -140,8 +127,7 @@ const Profile = () => {
                     {/* Loading Overlay */}
                     {uploading && (
                         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <div className="spinner-small" style={{ width: '20px', height: '20px', border: '2px solid #fff', borderTop: '2px solid transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
-                            <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+                            <div className="spinner-small"></div>
                         </div>
                     )}
 

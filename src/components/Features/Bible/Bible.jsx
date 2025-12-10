@@ -44,8 +44,14 @@ const Bible = () => {
 
     const loadContent = async () => {
         setLoading(true);
-        const data = await fetchBibleChapter(bibleState.version, bibleState.book, bibleState.chapter);
-        setContent(data);
+        const requestedBook = bibleState.book;
+        const requestedChapter = bibleState.chapter;
+
+        const data = await fetchBibleChapter(bibleState.version, requestedBook, requestedChapter);
+        setContent({
+            ...data,
+            meta: { book: requestedBook, chapter: requestedChapter }
+        });
         setLoading(false);
     };
 
@@ -131,7 +137,7 @@ const Bible = () => {
             {/* Content Area */}
             {view === 'content' && (
                 <div className="glass-card" style={{ flex: 1, padding: '20px', overflowY: 'auto' }}>
-                    {loading ? (
+                    {(loading || (content && (content.meta?.book !== bibleState.book || content.meta?.chapter !== bibleState.chapter))) ? (
                         <div style={{ textAlign: 'center', padding: '40px', opacity: 0.7 }}>
                             <div className="loading-spinner"></div>
                             <p>Cargando escritura...</p>
