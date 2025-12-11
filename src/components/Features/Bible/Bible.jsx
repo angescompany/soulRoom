@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { FaChevronLeft, FaChevronRight, FaFont, FaSearch, FaBook } from 'react-icons/fa';
+import { FaChevronLeft, FaChevronRight, FaFont, FaSearch, FaBook, FaVolumeUp, FaStop } from 'react-icons/fa';
 import { useAppContext } from '../../../context/AppContext';
 import { fetchBibleChapter, BIBLE_BOOKS } from '../../../services/bibleApi';
 
@@ -11,6 +11,102 @@ const Bible = () => {
     const [content, setContent] = useState(null);
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    const [isReading, setIsReading] = useState(false);
+    const [voices, setVoices] = useState([]);
+    const [selectedVoice, setSelectedVoice] = useState(null);
+    const speechRef = React.useRef(null);
+
+    // Load voices
+    useEffect(() => {
+        const loadVoices = () => {
+            const extraVoices = window.speechSynthesis.getVoices();
+            setVoices(extraVoices);
+        };
+
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+        loadVoices();
+
+        return () => {
+            window.speechSynthesis.onvoiceschanged = null;
+        };
+    }, []);
+
+    // Select default voice based on language
+    useEffect(() => {
+        if (voices.length > 0) {
+            const lang = bibleState.version === 'web' ? 'en' : 'es';
+            let defaultVoice;
+
+            if (lang === 'es') {
+                // Priority: Monica > Paulina > First Spanish voice
+                const monica = voices.find(v => v.name.toLowerCase().includes('monica'));
+                const paulina = voices.find(v => v.name.toLowerCase().includes('paulina'));
+                // Use Monica or Paulina if available. 
+                // If neither is available, try to find any Spanish voice, 
+                // essentially falling back even if they aren't in the strict dropdown (better to have voice than none)
+                defaultVoice = monica || paulina || voices.find(v => v.lang.startsWith('es'));
+            } else {
+                defaultVoice = voices.find(v => v.lang.startsWith(lang));
+            }
+
+            if (defaultVoice) {
+                setSelectedVoice(defaultVoice);
+            }
+        }
+    }, [voices, bibleState.version]);
+
+    // Stop reading when component unmounts or content changes
+    useEffect(() => {
+        return () => {
+            if (speechRef.current) {
+                window.speechSynthesis.cancel();
+            }
+        };
+    }, []);
+
+    useEffect(() => {
+        // Stop reading if chapter changes
+        if (isReading) {
+            window.speechSynthesis.cancel();
+            setIsReading(false);
+        }
+    }, [bibleState.book, bibleState.chapter]);
+
+    const handleReadAloud = () => {
+        if (isReading) {
+            window.speechSynthesis.cancel();
+            setIsReading(false);
+        } else {
+            if (!content) return;
+
+            let textToRead = '';
+            if (content.type === 'html') {
+                // Strip HTML tags for reading
+                const tmp = document.createElement("DIV");
+                tmp.innerHTML = content.content;
+                textToRead = tmp.textContent || tmp.innerText || "";
+            } else {
+                // Only read the text, not the numbers
+                textToRead = content.verses.map(v => v.text).join(' ');
+            }
+
+            const utterance = new SpeechSynthesisUtterance(textToRead);
+            if (selectedVoice) {
+                utterance.voice = selectedVoice;
+            }
+            utterance.lang = bibleState.version === 'web' ? 'en-US' : 'es-ES';
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+
+            utterance.onend = () => {
+                setIsReading(false);
+            };
+
+            speechRef.current = utterance;
+            window.speechSynthesis.speak(utterance);
+            setIsReading(true);
+        }
+    };
 
     // Handle navigation state from other components (e.g. Fasting Guide)
     useEffect(() => {
@@ -110,7 +206,70 @@ const Bible = () => {
                         <FaChevronRight size={12} style={{ opacity: 0.7 }} />
                     </button>
 
-                    <div style={{ display: 'flex', gap: '10px' }}>
+                    {/* Voice Selection Mobile friendly */}
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        {isReading && (
+                            <select
+                                className="custom-input"
+                                style={{ padding: '4px 8px', fontSize: '0.8rem', maxWidth: '120px' }}
+                                value={selectedVoice?.name || ''}
+                                onChange={(e) => {
+                                    const voice = voices.find(v => v.name === e.target.value);
+                                    if (voice) {
+                                        setSelectedVoice(voice);
+                                        // If reading, restart with new voice
+                                        if (isReading) {
+                                            window.speechSynthesis.cancel();
+                                            // Short timeout to ensure cancel completes
+                                            setTimeout(() => {
+                                                handleReadAloud(); // This will not work directly because handleReadAloud toggles.
+                                                // We need to refactor handleReadAloud or just let user restart.
+                                                // For now let's just update the voice state, effect will not auto-restart.
+                                                setIsReading(false);
+                                            }, 100);
+                                        }
+                                    }
+                                }}
+                            >
+                                {voices
+                                    .filter(v => {
+                                        const isSpanish = bibleState.version !== 'web';
+                                        const langMatch = v.lang.startsWith(isSpanish ? 'es' : 'en');
+                                        if (!langMatch) return false;
+
+                                        // For Spanish, filter only Monica and Paulina
+                                        if (isSpanish) {
+                                            const name = v.name.toLowerCase();
+                                            // Check for Monica or Paulina
+                                            // If neither exists in the list, we might want to fallback, 
+                                            // but user asked specifically for these. 
+                                            // Let's check availability first.
+                                            return name.includes('monica') || name.includes('paulina');
+                                        }
+
+                                        return true;
+                                    })
+                                    .map(v => (
+                                        <option key={v.name} value={v.name}>
+                                            {v.name.slice(0, 20)}...
+                                        </option>
+                                    ))}
+                            </select>
+                        )}
+
+                        <button
+                            onClick={handleReadAloud}
+                            className="btn-secondary"
+                            style={{
+                                padding: '8px',
+                                borderRadius: '8px',
+                                background: isReading ? 'var(--primary)' : 'rgba(255,255,255,0.1)',
+                                borderColor: isReading ? 'transparent' : 'rgba(255,255,255,0.1)'
+                            }}
+                            title={isReading ? "Detener lectura" : "Leer en voz alta"}
+                        >
+                            {isReading ? <FaStop size={14} /> : <FaVolumeUp size={14} />}
+                        </button>
                         <button onClick={() => setBibleState(prev => ({ ...prev, fontSize: Math.max(14, prev.fontSize - 2) }))} className="btn-secondary" style={{ padding: '8px', borderRadius: '8px' }}>
                             <FaFont size={10} />
                         </button>

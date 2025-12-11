@@ -1,8 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useTimer } from '../hooks/useTimer';
 
-import { auth, googleProvider } from '../services/firebase';
+import { auth, googleProvider, db } from '../services/firebase';
 import { onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
+import { doc, setDoc, onSnapshot } from 'firebase/firestore';
 
 
 const AppContext = createContext();
@@ -57,15 +58,69 @@ export const AppProvider = ({ children }) => {
         fontSize: 18
     }));
     const [activeFastingPlanId, setActiveFastingPlanId] = useState(() => loadState('activeFastingPlanId', null));
+    const [warRoomState, setWarRoomState] = useState(() => loadState('warRoomState', { isOpen: false, activeGuideId: null }));
+
 
     // Persistence Effects
     // User persistence is handled by Firebase Auth, removed manual local storage sync
-    useEffect(() => localStorage.setItem('settings', JSON.stringify(settings)), [settings]);
-    useEffect(() => localStorage.setItem('fastingHistory', JSON.stringify(fastingHistory)), [fastingHistory]);
-    useEffect(() => localStorage.setItem('prayingHistory', JSON.stringify(prayingHistory)), [prayingHistory]);
-    useEffect(() => localStorage.setItem('favoriteVerses', JSON.stringify(favoriteVerses)), [favoriteVerses]);
-    useEffect(() => localStorage.setItem('bibleState', JSON.stringify(bibleState)), [bibleState]);
-    useEffect(() => localStorage.setItem('activeFastingPlanId', JSON.stringify(activeFastingPlanId)), [activeFastingPlanId]);
+    const saveToFirestore = (key, data) => {
+        if (user) {
+            setDoc(doc(db, 'users', user.uid), { [key]: data }, { merge: true }).catch(e => console.error("Sync error", e));
+        }
+    };
+
+    useEffect(() => {
+        localStorage.setItem('settings', JSON.stringify(settings));
+        saveToFirestore('settings', settings);
+    }, [settings, user]);
+
+    useEffect(() => {
+        localStorage.setItem('fastingHistory', JSON.stringify(fastingHistory));
+        saveToFirestore('fastingHistory', fastingHistory);
+    }, [fastingHistory, user]);
+
+    useEffect(() => {
+        localStorage.setItem('prayingHistory', JSON.stringify(prayingHistory));
+        saveToFirestore('prayingHistory', prayingHistory);
+    }, [prayingHistory, user]);
+
+    useEffect(() => {
+        localStorage.setItem('favoriteVerses', JSON.stringify(favoriteVerses));
+        saveToFirestore('favoriteVerses', favoriteVerses);
+    }, [favoriteVerses, user]);
+
+    useEffect(() => {
+        localStorage.setItem('bibleState', JSON.stringify(bibleState));
+        saveToFirestore('bibleState', bibleState);
+    }, [bibleState, user]);
+
+    useEffect(() => {
+        localStorage.setItem('activeFastingPlanId', JSON.stringify(activeFastingPlanId));
+        saveToFirestore('activeFastingPlanId', activeFastingPlanId);
+    }, [activeFastingPlanId, user]);
+
+    useEffect(() => {
+        localStorage.setItem('warRoomState', JSON.stringify(warRoomState));
+        saveToFirestore('warRoomState', warRoomState);
+    }, [warRoomState, user]);
+
+    // Firestore Listener (One-way Sync Remote -> Local on login)
+    useEffect(() => {
+        if (!user) return;
+        const unsubscribe = onSnapshot(doc(db, 'users', user.uid), (doc) => {
+            if (doc.exists()) {
+                const data = doc.data();
+                if (data.settings) setSettings(prev => JSON.stringify(prev) !== JSON.stringify(data.settings) ? data.settings : prev);
+                if (data.fastingHistory) setFastingHistory(prev => JSON.stringify(prev) !== JSON.stringify(data.fastingHistory) ? data.fastingHistory : prev);
+                if (data.prayingHistory) setPrayingHistory(prev => JSON.stringify(prev) !== JSON.stringify(data.prayingHistory) ? data.prayingHistory : prev);
+                if (data.favoriteVerses) setFavoriteVerses(prev => JSON.stringify(prev) !== JSON.stringify(data.favoriteVerses) ? data.favoriteVerses : prev);
+                if (data.bibleState) setBibleState(prev => JSON.stringify(prev) !== JSON.stringify(data.bibleState) ? data.bibleState : prev);
+                if (data.activeFastingPlanId) setActiveFastingPlanId(prev => prev !== data.activeFastingPlanId ? data.activeFastingPlanId : prev);
+                if (data.warRoomState) setWarRoomState(prev => JSON.stringify(prev) !== JSON.stringify(data.warRoomState) ? data.warRoomState : prev);
+            }
+        });
+        return () => unsubscribe();
+    }, [user]);
 
     // Theme Effect
     useEffect(() => {
@@ -139,9 +194,9 @@ export const AppProvider = ({ children }) => {
 
     const fastingTimer = useTimer(0, () => handleTimerComplete("¡Has completado tu tiempo de ayuno!"));
     const prayerTimer = useTimer(0, () => handleTimerComplete("¡Tiempo de oración finalizado!"));
-    const [warRoomState, setWarRoomState] = useState(() => loadState('warRoomState', { isOpen: false, activeGuideId: null }));
 
-    useEffect(() => localStorage.setItem('warRoomState', JSON.stringify(warRoomState)), [warRoomState]);
+    // warRoomState persistence moved to main persistence block above
+
 
     const login = async () => {
         try {
@@ -162,6 +217,62 @@ export const AppProvider = ({ children }) => {
         }
     };
 
+    // Prayer Alarms Logic
+    const [prayerAlarms, setPrayerAlarms] = useState(() => loadState('prayerAlarms', {
+        morning: false, // 6:00
+        noon: false,    // 12:00
+        evening: false, // 18:00
+        custom: '',     // HH:MM
+        frequency: false // Every 4h (8, 12, 16, 20)
+    }));
+
+    useEffect(() => {
+        localStorage.setItem('prayerAlarms', JSON.stringify(prayerAlarms));
+        // saveToFirestore('prayerAlarms', prayerAlarms); // Optional: Sync if desired
+    }, [prayerAlarms, user]);
+
+    // Check Alarms Interval
+    useEffect(() => {
+        const checkAlarms = () => {
+            if (!settings.notifications) return; // Respect global notification setting
+            if (Notification.permission !== 'granted') return;
+
+            const now = new Date();
+            const h = now.getHours();
+            const m = now.getMinutes();
+            const timeStr = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+
+            // Helper to fire alarm
+            const fireAlarm = (title, body) => {
+                new Notification(title, { body, icon: '/vite.svg' });
+                if (settings.sounds) playSound();
+            };
+
+            // Predefined
+            if (prayerAlarms.morning && h === 6 && m === 0) fireAlarm("Hora de Oración", "¡Son las 6:00 AM! Comienza tu día con Dios.");
+            if (prayerAlarms.noon && h === 12 && m === 0) fireAlarm("Hora de Oración", "¡Son las 12:00 PM! Tómate un momento para orar.");
+            if (prayerAlarms.evening && h === 18 && m === 0) fireAlarm("Hora de Oración", "¡Son las 6:00 PM! Cierra tu día con gratitud.");
+
+            // Custom
+            if (prayerAlarms.custom === timeStr) fireAlarm("Alarma Personalizada", "Es tu tiempo definido para orar.");
+
+            // Frequency (Every 4h: 8, 12, 16, 20)
+            if (prayerAlarms.frequency && m === 0) {
+                if ([8, 12, 16, 20].includes(h)) {
+                    if (h === 12 && prayerAlarms.noon) return;
+                    fireAlarm("Recordatorio de Oración", "Mantente conectado. Un momento para orar.");
+                }
+            }
+        };
+
+        const interval = setInterval(() => {
+            checkAlarms();
+        }, 60000); // Check every minute
+
+        return () => clearInterval(interval);
+    }, [prayerAlarms, settings.notifications, settings.sounds]);
+
+
     const value = {
         user, setUser, login, logout,
         settings, setSettings,
@@ -173,8 +284,12 @@ export const AppProvider = ({ children }) => {
         fastingTimer, // Exported Globally
         activeFastingPlanId, setActiveFastingPlanId,
         prayerTimer,
-        warRoomState, setWarRoomState
+        warRoomState, setWarRoomState,
+        prayerAlarms, setPrayerAlarms // Exported
     };
+
+
+
 
     return (
         <AppContext.Provider value={value}>

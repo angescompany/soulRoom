@@ -1,4 +1,4 @@
-const API_KEY = 'XFbZvIeSRLnktLk31JcZQ'; // Should be env var in production
+const API_KEY = import.meta.env.VITE_BIBLE_API_KEY; // Managed via .env
 
 export const BIBLE_BOOKS = [
     // Old Testament

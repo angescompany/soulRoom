@@ -1,19 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { FaPlay, FaPause, FaUndo, FaCheck, FaDungeon } from 'react-icons/fa';
+import { FaPlay, FaPause, FaUndo, FaCheck, FaDungeon, FaBell } from 'react-icons/fa';
 import { useTimer } from '../../../hooks/useTimer';
 import { useAppContext } from '../../../context/AppContext';
 import TimerDisplay from '../../Shared/TimerDisplay';
 import WarRoom from '../../WarRoom/WarRoom';
 
 const Prayer = () => {
-    const { addPrayingEntry, prayerTimer: timer, warRoomState, setWarRoomState } = useAppContext();
+    const { addPrayingEntry, prayerTimer: timer, warRoomState, setWarRoomState, prayerAlarms, setPrayerAlarms } = useAppContext();
     const location = useLocation();
     const [customMinutes, setCustomMinutes] = useState('');
-    // Removed local showWarRoom and targetGuideId in favor of global warRoomState
+
+    // Notification Permission State
+    const [perm, setPerm] = useState(Notification.permission);
 
     const [showFocusAlert, setShowFocusAlert] = useState(false);
     const [dontShowAgain, setDontShowAgain] = useState(false);
+
+    const requestPermission = () => {
+        Notification.requestPermission().then(permission => {
+            setPerm(permission);
+        });
+    };
+
+    const toggleAlarm = (key) => {
+        if (Notification.permission !== 'granted') requestPermission();
+        setPrayerAlarms(prev => ({ ...prev, [key]: !prev[key] }));
+    };
+
+    const handleCustomAlarmChange = (e) => {
+        setPrayerAlarms(prev => ({ ...prev, custom: e.target.value }));
+    };
 
     const initiateWarRoom = () => {
         const isHidden = localStorage.getItem('hideWarRoomAlert');
@@ -34,7 +51,6 @@ const Prayer = () => {
     };
 
     // Handle deep linking to War Room
-    // Handle deep linking to War Room
     useEffect(() => {
         if (location.state && location.state.openWarRoom) {
             setWarRoomState(prev => ({
@@ -52,8 +68,6 @@ const Prayer = () => {
         alert("Tiempo de Oración Completado!");
         addPrayingEntry(timer.totalSeconds);
     };
-
-    // const timer = useTimer(0, onComplete); // Removed local timer in favor of global prayerTimer
 
     const handlePreset = (minutes) => {
         timer.start(minutes * 60);
@@ -80,7 +94,7 @@ const Prayer = () => {
                         totalSeconds={timer.totalSeconds}
                     />
 
-                    <div className="timer-controls" style={{ marginTop: '30px' }}>
+                    <div className="timer-controls" style={{ marginTop: '30px', marginBottom: '30px' }}>
                         {!timer.isRunning && !timer.isPaused ? (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                                 {/* War Room Card */}
@@ -155,6 +169,56 @@ const Prayer = () => {
                             </div>
                         )}
                     </div>
+
+                    {/* Prayer Alarms Section */}
+                    {/* Only show when not in timer mode, or always? User request didn't specify, but better to keep UI clean. 
+                        Let's keep it visible since user might want to set alarm while praying or checking app.
+                        However, usually timer-controls takes space. 
+                    */}
+                    <div className="glass-card">
+                        <h3 style={{ fontSize: '1.1rem', marginBottom: '15px', color: '#fff', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <FaBell /> Alarmas de Oración
+                        </h3>
+
+                        {perm !== 'granted' && perm !== 'denied' && (
+                            <div style={{ marginBottom: '15px', padding: '10px', background: 'rgba(255, 193, 7, 0.2)', borderRadius: '8px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <span>Habilita notificaciones para recibir las alarmas.</span>
+                                <button onClick={requestPermission} style={{ textDecoration: 'underline', background: 'none', border: 'none', color: '#fff', cursor: 'pointer' }}>Activar</button>
+                            </div>
+                        )}
+
+                        <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
+                            <AlarmToggle label="6 AM" active={prayerAlarms?.morning} onClick={() => toggleAlarm('morning')} />
+                            <AlarmToggle label="12 PM" active={prayerAlarms?.noon} onClick={() => toggleAlarm('noon')} />
+                            <AlarmToggle label="6 PM" active={prayerAlarms?.evening} onClick={() => toggleAlarm('evening')} />
+                        </div>
+
+                        <div style={{ marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <label style={{ fontSize: '0.9rem', minWidth: '80px' }}>Personalizada:</label>
+                            <input
+                                type="time"
+                                className="custom-input"
+                                style={{ flex: 1 }}
+                                value={prayerAlarms?.custom || ''}
+                                onChange={handleCustomAlarmChange}
+                            />
+                        </div>
+
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '15px' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <span style={{ fontSize: '1rem' }}>Recordatorio Frecuente</span>
+                                <span style={{ fontSize: '0.8rem', opacity: 0.7 }}>Avisar cada 4 horas (día)</span>
+                            </div>
+                            <label className="switch">
+                                <input
+                                    type="checkbox"
+                                    checked={prayerAlarms?.frequency || false}
+                                    onChange={() => toggleAlarm('frequency')}
+                                />
+                                <span className="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -205,5 +269,24 @@ const Prayer = () => {
         </>
     );
 };
+
+// Helper Component for Alarm Toggles
+const AlarmToggle = ({ label, active, onClick }) => (
+    <button
+        onClick={onClick}
+        className={`btn-secondary ${active ? 'active' : ''}`}
+        style={{
+            flex: 1,
+            margin: '0 5px',
+            background: active ? 'var(--accent)' : 'rgba(255,255,255,0.1)',
+            color: active ? '#000' : '#fff',
+            border: active ? 'none' : '1px solid rgba(255,255,255,0.2)',
+            fontSize: '0.9rem',
+            padding: '10px'
+        }}
+    >
+        {label}
+    </button>
+);
 
 export default Prayer;
