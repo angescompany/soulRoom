@@ -6,6 +6,7 @@ import Fasting from './components/Features/Fasting/Fasting';
 import Prayer from './components/Features/Prayer/Prayer';
 import Bible from './components/Features/Bible/Bible';
 import Profile from './components/Features/Profile/Profile';
+import PWAInstallPrompt from './components/Shared/PWAInstallPrompt';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
 
         {/* Global Navigation */}
         <BottomNav />
+        <PWAInstallPrompt />
 
       </div>
     </Router>
