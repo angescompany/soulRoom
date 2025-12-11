@@ -61,10 +61,12 @@ export const AppProvider = ({ children }) => {
     const [warRoomState, setWarRoomState] = useState(() => loadState('warRoomState', { isOpen: false, activeGuideId: null }));
 
 
+    const [isDataLoaded, setIsDataLoaded] = useState(false);
+
     // Persistence Effects
     // User persistence is handled by Firebase Auth, removed manual local storage sync
     const saveToFirestore = (key, data) => {
-        if (user) {
+        if (user && isDataLoaded) { // Only save if user is logged in AND data has been loaded from server
             setDoc(doc(db, 'users', user.uid), { [key]: data }, { merge: true }).catch(e => console.error("Sync error", e));
         }
     };
@@ -72,44 +74,48 @@ export const AppProvider = ({ children }) => {
     useEffect(() => {
         localStorage.setItem('settings', JSON.stringify(settings));
         saveToFirestore('settings', settings);
-    }, [settings, user]);
+    }, [settings, user, isDataLoaded]);
 
     useEffect(() => {
         localStorage.setItem('fastingHistory', JSON.stringify(fastingHistory));
         saveToFirestore('fastingHistory', fastingHistory);
-    }, [fastingHistory, user]);
+    }, [fastingHistory, user, isDataLoaded]);
 
     useEffect(() => {
         localStorage.setItem('prayingHistory', JSON.stringify(prayingHistory));
         saveToFirestore('prayingHistory', prayingHistory);
-    }, [prayingHistory, user]);
+    }, [prayingHistory, user, isDataLoaded]);
 
     useEffect(() => {
         localStorage.setItem('favoriteVerses', JSON.stringify(favoriteVerses));
         saveToFirestore('favoriteVerses', favoriteVerses);
-    }, [favoriteVerses, user]);
+    }, [favoriteVerses, user, isDataLoaded]);
 
     useEffect(() => {
         localStorage.setItem('bibleState', JSON.stringify(bibleState));
         saveToFirestore('bibleState', bibleState);
-    }, [bibleState, user]);
+    }, [bibleState, user, isDataLoaded]);
 
     useEffect(() => {
         localStorage.setItem('activeFastingPlanId', JSON.stringify(activeFastingPlanId));
         saveToFirestore('activeFastingPlanId', activeFastingPlanId);
-    }, [activeFastingPlanId, user]);
+    }, [activeFastingPlanId, user, isDataLoaded]);
 
     useEffect(() => {
         localStorage.setItem('warRoomState', JSON.stringify(warRoomState));
         saveToFirestore('warRoomState', warRoomState);
-    }, [warRoomState, user]);
+    }, [warRoomState, user, isDataLoaded]);
 
     // Firestore Listener (One-way Sync Remote -> Local on login)
     useEffect(() => {
-        if (!user) return;
+        if (!user) {
+            setIsDataLoaded(false); // Reset on logout
+            return;
+        }
         const unsubscribe = onSnapshot(doc(db, 'users', user.uid), (doc) => {
             if (doc.exists()) {
                 const data = doc.data();
+                // Batch updates or individual checks
                 if (data.settings) setSettings(prev => JSON.stringify(prev) !== JSON.stringify(data.settings) ? data.settings : prev);
                 if (data.fastingHistory) setFastingHistory(prev => JSON.stringify(prev) !== JSON.stringify(data.fastingHistory) ? data.fastingHistory : prev);
                 if (data.prayingHistory) setPrayingHistory(prev => JSON.stringify(prev) !== JSON.stringify(data.prayingHistory) ? data.prayingHistory : prev);
@@ -118,6 +124,7 @@ export const AppProvider = ({ children }) => {
                 if (data.activeFastingPlanId) setActiveFastingPlanId(prev => prev !== data.activeFastingPlanId ? data.activeFastingPlanId : prev);
                 if (data.warRoomState) setWarRoomState(prev => JSON.stringify(prev) !== JSON.stringify(data.warRoomState) ? data.warRoomState : prev);
             }
+            setIsDataLoaded(true); // Mark as loaded so we can start saving changes
         });
         return () => unsubscribe();
     }, [user]);

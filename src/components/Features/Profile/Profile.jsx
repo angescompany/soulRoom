@@ -37,8 +37,8 @@ const Profile = () => {
             setStatusMsg('¡Guardado!');
             setTimeout(() => setStatusMsg(''), 3000);
         } catch (error) {
-            console.error('Upload error (CORS):', error);
-            setStatusMsg('CORS activo: Vista local.');
+            console.error('Upload error:', error);
+            setStatusMsg('Error: ' + error.code || 'Falló la subida');
             setTimeout(() => setStatusMsg(''), 4000);
         } finally {
             setUploading(false);

@@ -64,7 +64,7 @@ const Home = () => {
     return (
         <div className="home-container">
             {/* Header Greeting & StatsRefactor */}
-            <header style={{ marginBottom: '25px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+            <header style={{ marginBottom: '25px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     {/* User Avatar */}
                     <div style={{
@@ -72,13 +72,19 @@ const Home = () => {
                         height: '40px',
                         borderRadius: '50%',
                         overflow: 'hidden',
-                        border: '2px solid rgba(255,255,255,0.2)',
-                        background: 'rgba(255,255,255,0.1)'
+                        border: '3px solid #2d3436',
+                        background: '#00E5FF',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#fff',
+                        fontWeight: 'bold',
+                        fontSize: '1.2rem'
                     }}>
-                        {user?.photoURL ? (
-                            <img src={user.photoURL} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        {user?.avatar ? (
+                            <img src={user.avatar} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         ) : (
-                            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--accent)', color: '#fff', fontWeight: 'bold' }}>
+                            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#00E5FF', color: '#fff', fontSize: '1.2rem' }}>
                                 {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
                             </div>
                         )}
@@ -241,7 +247,7 @@ const FeatureCarousel = () => {
         {
             id: 1,
             title: "La importancia del Ayuno",
-            subtitle: "Fortalece tu espíritu",
+            subtitle: "El ayuno es una llave que libera el poder espiritual en tu vida.",
             path: "/fasting",
             btnText: "Ir a Ayuno",
             icon: <FaUtensils />,
@@ -251,7 +257,7 @@ const FeatureCarousel = () => {
         {
             id: 2,
             title: "Cuarto de Oración",
-            subtitle: "Tu guía para hablar con Dios",
+            subtitle: "La oración es el aliento del alma.",
             path: "/prayer",
             btnText: "Ir a Oración",
             icon: <FaPrayingHands />,
@@ -261,7 +267,7 @@ const FeatureCarousel = () => {
         {
             id: 3,
             title: "Lectura Bíblica",
-            subtitle: "Medita en la palabra",
+            subtitle: "Lámpara es a mis pies tu palabra, y lumbrera a mi camino.",
             path: "/bible",
             btnText: "Ir a Biblia",
             icon: <FaBookOpen />,
@@ -329,7 +335,7 @@ const FeatureCarousel = () => {
                                     {feature.icon}
                                 </div>
                                 <h3 style={{ margin: '0 0 5px 0', fontSize: '1.3rem', lineHeight: '1.2' }}>{feature.title}</h3>
-                                <p style={{ margin: 0, opacity: 0.9, fontSize: '0.9rem' }}>{feature.subtitle}</p>
+                                <p style={{ margin: 0, fontWeight: '600', fontSize: '1rem', lineHeight: '1.4', color: '#ffffff', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>{feature.subtitle}</p>
 
                                 <span style={{
                                     display: 'inline-block',
