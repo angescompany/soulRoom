@@ -182,8 +182,10 @@ export const AppProvider = ({ children }) => {
     };
 
     const sendNotification = (msg) => {
-        if (Notification.permission === 'granted') {
-            new Notification('SoulRoom', { body: msg, icon: '/vite.svg' });
+        if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+            try {
+                new Notification('SoulRoom', { body: msg, icon: '/vite.svg' });
+            } catch (e) { console.warn("Notification error (mobile?)", e); }
         }
     };
 
@@ -235,7 +237,7 @@ export const AppProvider = ({ children }) => {
     useEffect(() => {
         const checkAlarms = () => {
             if (!settings.notifications) return; // Respect global notification setting
-            if (Notification.permission !== 'granted') return;
+            if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
 
             const now = new Date();
             const h = now.getHours();
@@ -244,7 +246,9 @@ export const AppProvider = ({ children }) => {
 
             // Helper to fire alarm
             const fireAlarm = (title, body) => {
-                new Notification(title, { body, icon: '/vite.svg' });
+                try {
+                    new Notification(title, { body, icon: '/vite.svg' });
+                } catch (e) { console.warn("Alarm notification error", e); }
                 if (settings.sounds) playSound();
             };
 

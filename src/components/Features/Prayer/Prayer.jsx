@@ -12,19 +12,20 @@ const Prayer = () => {
     const [customMinutes, setCustomMinutes] = useState('');
 
     // Notification Permission State
-    const [perm, setPerm] = useState(Notification.permission);
+    const [perm, setPerm] = useState(typeof Notification !== 'undefined' ? Notification.permission : 'default');
 
     const [showFocusAlert, setShowFocusAlert] = useState(false);
     const [dontShowAgain, setDontShowAgain] = useState(false);
 
     const requestPermission = () => {
+        if (typeof Notification === 'undefined') return;
         Notification.requestPermission().then(permission => {
             setPerm(permission);
         });
     };
 
     const toggleAlarm = (key) => {
-        if (Notification.permission !== 'granted') requestPermission();
+        if (typeof Notification !== 'undefined' && Notification.permission !== 'granted') requestPermission();
         setPrayerAlarms(prev => ({ ...prev, [key]: !prev[key] }));
     };
 
