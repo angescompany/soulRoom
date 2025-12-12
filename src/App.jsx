@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import BottomNav from './components/Layout/BottomNav';
 import Home from './components/Features/Home/Home';
 import Fasting from './components/Features/Fasting/Fasting';
@@ -10,31 +10,37 @@ import PWAInstallPrompt from './components/Shared/PWAInstallPrompt';
 
 import LandingPage from './components/Features/Onboarding/LandingPage';
 
-function App() {
+const AppContent = () => {
+  const location = useLocation();
+  const isOnboarding = location.pathname === '/welcome';
   const hasVisited = localStorage.getItem('hasVisited');
 
   return (
-    <Router>
-      <div className="app-container">
-
-        {/* Main Content Area */}
-        <div className="content-area">
-          <Routes>
-            <Route path="/welcome" element={<LandingPage />} />
-            <Route path="/" element={hasVisited ? <Home /> : <Navigate to="/welcome" replace />} />
-            <Route path="/fasting" element={<Fasting />} />
-            <Route path="/prayer" element={<Prayer />} />
-            <Route path="/bible" element={<Bible />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </div>
-
-        {/* Global Navigation - Hide on welcome screen */}
-        {!window.location.pathname.includes('/welcome') && <BottomNav />}
-        <PWAInstallPrompt />
-
+    <div className="app-container" style={isOnboarding ? { maxWidth: '100%', margin: 0, border: 'none' } : {}}>
+      {/* Main Content Area */}
+      <div className="content-area" style={isOnboarding ? { padding: 0, paddingBottom: 0 } : {}}>
+        <Routes>
+          <Route path="/welcome" element={<LandingPage />} />
+          <Route path="/" element={hasVisited ? <Home /> : <Navigate to="/welcome" replace />} />
+          <Route path="/fasting" element={<Fasting />} />
+          <Route path="/prayer" element={<Prayer />} />
+          <Route path="/bible" element={<Bible />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </div>
+
+      {/* Global Navigation - Hide on welcome screen */}
+      {!isOnboarding && <BottomNav />}
+      {!isOnboarding && <PWAInstallPrompt />}
+    </div>
+  );
+};
+
+function App() {
+  return (
+    <Router>
+      <AppContent />
     </Router>
   );
 }

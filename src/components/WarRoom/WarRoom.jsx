@@ -249,7 +249,7 @@ const WarRoom = ({ timer, onClose, initialGuideId, onGuideSelect }) => {
                         "Cierra la puerta, y ora a tu Padre que está en secreto..."
                     </p>
 
-                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', overflowY: 'auto', width: '100%' }}>
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', overflowY: 'auto', width: '100%', paddingBottom: '100px', overscrollBehavior: 'contain' }}>
                         <div style={{ marginBottom: '30px' }}>
                             <TimerDisplay
                                 time={timer.formatTime()}
@@ -379,14 +379,14 @@ const WarRoom = ({ timer, onClose, initialGuideId, onGuideSelect }) => {
                     </div>
 
                     {/* Scrollable Content (Full Height) */}
-                    {/* Scrollable Content (Full Height) */}
                     <div
                         className="scroll-hide"
                         style={{
                             flex: 1,
                             overflowY: 'auto',
                             padding: '10px 5px 120px 5px', /* Increased bottom padding to clear nav */
-                            WebkitOverflowScrolling: 'touch'
+                            WebkitOverflowScrolling: 'touch',
+                            overscrollBehavior: 'contain'
                         }}
                     >
                         {/* Inline style block removed as class handles it */}
@@ -415,7 +415,7 @@ const WarRoom = ({ timer, onClose, initialGuideId, onGuideSelect }) => {
 
             {/* Guide Selector Modal (Same as before) */}
             {showGuideSelector && (
-                <div className="guide-selector-modal">
+                <div className="guide-selector-modal" style={{ overscrollBehavior: 'contain' }}>
                     <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px', position: 'relative', flexShrink: 0 }}>
                         <button
                             onClick={() => setShowGuideSelector(false)}
@@ -440,14 +440,15 @@ const WarRoom = ({ timer, onClose, initialGuideId, onGuideSelect }) => {
                     <div style={{
                         overflowY: 'scroll',
                         flex: 1,
-                        paddingBottom: '20px',
+                        paddingBottom: '120px', /* Increased bottom padding */
                         minHeight: 0,
                         scrollbarWidth: 'none',
                         msOverflowStyle: 'none',
                         WebkitOverflowScrolling: 'touch',
                         display: 'grid',
                         gap: '10px',
-                        alignContent: 'start' /* Important for grid scroll */
+                        alignContent: 'start',
+                        overscrollBehavior: 'contain' /* Prevent scrolling background */
                     }}>
                         {PRAYER_GUIDES.map(guide => (
                             <button

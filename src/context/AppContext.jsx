@@ -281,7 +281,44 @@ export const AppProvider = ({ children }) => {
         }, 60000); // Check every minute
 
         return () => clearInterval(interval);
+        return () => clearInterval(interval);
     }, [prayerAlarms, settings.notifications, settings.sounds]);
+
+    // Prayer Requests Logic
+    const [prayerRequests, setPrayerRequests] = useState(() => loadState('prayerRequests', []));
+
+    useEffect(() => {
+        localStorage.setItem('prayerRequests', JSON.stringify(prayerRequests));
+        saveToFirestore('prayerRequests', prayerRequests);
+    }, [prayerRequests, user, isDataLoaded]);
+
+    const addPrayerRequest = (text) => {
+        const newRequest = {
+            id: Date.now().toString(),
+            text,
+            createdAt: new Date().toISOString(),
+            answered: false,
+            answeredAt: null
+        };
+        setPrayerRequests(prev => [newRequest, ...prev]);
+    };
+
+    const togglePrayerRequest = (id) => {
+        setPrayerRequests(prev => prev.map(req => {
+            if (req.id === id) {
+                return {
+                    ...req,
+                    answered: !req.answered,
+                    answeredAt: !req.answered ? new Date().toISOString() : null
+                };
+            }
+            return req;
+        }));
+    };
+
+    const deletePrayerRequest = (id) => {
+        setPrayerRequests(prev => prev.filter(req => req.id !== id));
+    };
 
 
     const value = {
@@ -296,7 +333,8 @@ export const AppProvider = ({ children }) => {
         activeFastingPlanId, setActiveFastingPlanId,
         prayerTimer,
         warRoomState, setWarRoomState,
-        prayerAlarms, setPrayerAlarms // Exported
+        prayerAlarms, setPrayerAlarms, // Exported
+        prayerRequests, addPrayerRequest, togglePrayerRequest, deletePrayerRequest
     };
 
 
