@@ -119,16 +119,29 @@ const Bible = () => {
             );
 
             if (targetBook) {
-                // Force clear previous content to prevent stale display
-                setContent(null);
-                setLoading(true);
+                const targetChapter = location.state.chapter.toString();
 
-                setBibleState(prev => ({
-                    ...prev,
-                    book: targetBook.id,
-                    chapter: location.state.chapter.toString()
-                }));
-                setView('content');
+                // CRITICAL FIX: Check if we are already on the requested book/chapter.
+                // If so, the default useEffect [bibleState...] won't run because values didn't change.
+                // We must handle this 'same-state' navigation manually to ensure content loads.
+                if (bibleState.book === targetBook.id && bibleState.chapter === targetChapter) {
+                    setView('content');
+                    // Force load if content is missing or doesn't match (e.g. after unmount)
+                    if (!content || content.meta?.book !== targetBook.id || content.meta?.chapter !== targetChapter) {
+                        loadContent();
+                    }
+                } else {
+                    // Different content requested. Force clear to prevent stale display.
+                    setContent(null);
+                    setLoading(true);
+
+                    setBibleState(prev => ({
+                        ...prev,
+                        book: targetBook.id,
+                        chapter: targetChapter
+                    }));
+                    setView('content');
+                }
             }
         }
     }, [location.state]);
@@ -138,17 +151,31 @@ const Bible = () => {
         if (view === 'content') loadContent();
     }, [bibleState.book, bibleState.chapter, bibleState.version]);
 
+    const lastRequestId = React.useRef(0);
+
     const loadContent = async () => {
+        const requestId = ++lastRequestId.current;
         setLoading(true);
         const requestedBook = bibleState.book;
         const requestedChapter = bibleState.chapter;
 
-        const data = await fetchBibleChapter(bibleState.version, requestedBook, requestedChapter);
-        setContent({
-            ...data,
-            meta: { book: requestedBook, chapter: requestedChapter }
-        });
-        setLoading(false);
+        try {
+            const data = await fetchBibleChapter(bibleState.version, requestedBook, requestedChapter);
+
+            // Only update if this is still the latest request
+            if (requestId === lastRequestId.current) {
+                setContent({
+                    ...data,
+                    meta: { book: requestedBook, chapter: requestedChapter }
+                });
+                setLoading(false);
+            }
+        } catch (error) {
+            console.error("Error loading chapter:", error);
+            if (requestId === lastRequestId.current) {
+                setLoading(false);
+            }
+        }
     };
 
     const handleBookSelect = (bookId) => {

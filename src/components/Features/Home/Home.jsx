@@ -3,6 +3,9 @@ import { FaUtensils, FaPrayingHands, FaBookOpen, FaBolt, FaHeart, FaShareAlt, Fa
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../../../context/AppContext';
 
+import { DAILY_VERSES } from '../../../data/dailyVerses';
+import BeginnerGuides from './BeginnerGuides';
+
 const Home = () => {
     const { user, prayingHistory } = useAppContext();
     const [greeting, setGreeting] = useState('Hola');
@@ -16,11 +19,23 @@ const Home = () => {
         else setGreeting('Buenas Noches');
     }, []);
 
+    // Get Daily Verse
+    const todayVerse = useMemo(() => {
+        const now = new Date();
+        const start = new Date(now.getFullYear(), 0, 0); // Start of year
+        const diff = now - start;
+        const oneDay = 1000 * 60 * 60 * 24;
+        const dayOfYear = Math.floor(diff / oneDay);
+
+        const verseIndex = dayOfYear % DAILY_VERSES.length;
+        return DAILY_VERSES[verseIndex];
+    }, []);
+
     const handleShare = () => {
         if (navigator.share) {
             navigator.share({
                 title: 'Versículo del Día',
-                text: '"Mas los que esperan a Jehová tendrán nuevas fuerzas..." — Isaías 40:31',
+                text: `"${todayVerse.text}" — ${todayVerse.reference}`,
                 url: window.location.href
             }).catch(console.error);
         } else {
@@ -43,23 +58,8 @@ const Home = () => {
         return { hours, streak: uniqueDays, isActive };
     }, [prayingHistory]);
 
-    // Dynamic Background Image based on date
-    const todaySeed = useMemo(() => {
-        const d = new Date();
-        return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
-    }, []);
-
-    const backgrounds = [
-        'https://images.unsplash.com/photo-1470252649378-9c29740c9fa8', // Mountains
-        'https://images.unsplash.com/photo-1472214103451-9374bd1c798e', // Green hills
-        'https://images.unsplash.com/photo-1441974231531-c6227db76b6e', // Forest
-        'https://images.unsplash.com/photo-1501854140884-074bf86ee911', // Sunset
-        'https://images.unsplash.com/photo-1426604966848-d7adac402bff', // Canyon
-        'https://images.unsplash.com/photo-1447752875215-b2761acb3c5d', // Forest 2
-        'https://images.unsplash.com/photo-1475924156734-496f6cac6ec1'  // Beach
-    ];
-    const bgIndex = new Date().getDate() % backgrounds.length;
-    const bgUrl = `${backgrounds[bgIndex]}?q=80&w=1600&auto=format&fit=crop`;
+    // Background Image from Verse
+    const bgUrl = todayVerse.image;
 
     return (
         <div className="home-container">
@@ -141,9 +141,9 @@ const Home = () => {
                         marginBottom: '20px',
                         textShadow: '0 2px 4px rgba(0,0,0,0.5)'
                     }}>
-                        "Mas los que esperan a Jehová tendrán nuevas fuerzas; levantarán alas como las águilas..."
+                        "{todayVerse.text}"
                     </p>
-                    <p style={{ textAlign: 'right', fontSize: '0.9rem', fontWeight: 'bold', color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.5)', marginBottom: '20px' }}>— Isaías 40:31</p>
+                    <p style={{ textAlign: 'right', fontSize: '0.9rem', fontWeight: 'bold', color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.5)', marginBottom: '20px' }}>— {todayVerse.reference}</p>
 
                     {/* Actions Row */}
                     <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }} onClick={(e) => e.stopPropagation()}>
@@ -153,7 +153,7 @@ const Home = () => {
                         <button onClick={handleShare} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.9rem' }}>
                             <FaShareAlt size={18} />
                         </button>
-                        <NavLink to="/bible" state={{ bookId: 'isaiah', chapter: '40' }} style={{ textDecoration: 'none', color: '#fff', display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.9rem', marginLeft: 'auto', background: 'rgba(0,0,0,0.3)', padding: '5px 12px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.3)' }}>
+                        <NavLink to="/bible" state={{ bookId: todayVerse.bookId, chapter: todayVerse.chapter }} style={{ textDecoration: 'none', color: '#fff', display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.9rem', marginLeft: 'auto', background: 'rgba(0,0,0,0.3)', padding: '5px 12px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.3)' }}>
                             <FaBook size={14} /> Leer Capítulo
                         </NavLink>
                     </div>
@@ -201,9 +201,9 @@ const Home = () => {
                             marginBottom: '20px',
                             textShadow: '0 2px 10px rgba(0,0,0,0.7)'
                         }}>
-                            "Mas los que esperan a Jehová tendrán nuevas fuerzas; levantarán alas como las águilas..."
+                            "{todayVerse.text}"
                         </p>
-                        <p style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#fff', textShadow: '0 2px 10px rgba(0,0,0,0.7)' }}>— Isaías 40:31</p>
+                        <p style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#fff', textShadow: '0 2px 10px rgba(0,0,0,0.7)' }}>— {todayVerse.reference}</p>
                     </div>
 
                     {/* Bottom Actions - Fullscreen */}
@@ -223,7 +223,7 @@ const Home = () => {
                             <FaShareAlt size={24} />
                             <span style={{ fontSize: '0.8rem', opacity: 0.8 }}>Compartir</span>
                         </button>
-                        <NavLink to="/bible" state={{ bookId: 'isaiah', chapter: '40' }} onClick={() => setIsExpanded(false)} style={{ textDecoration: 'none', color: '#fff', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px' }}>
+                        <NavLink to="/bible" state={{ bookId: todayVerse.bookId, chapter: todayVerse.chapter }} onClick={() => setIsExpanded(false)} style={{ textDecoration: 'none', color: '#fff', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px' }}>
                             <FaBook size={24} />
                             <span style={{ fontSize: '0.8rem', opacity: 0.8 }}>Leer</span>
                         </NavLink>
@@ -234,6 +234,9 @@ const Home = () => {
             {/* Feature Carousel (Explorar la App) */}
             <h2 style={{ fontSize: '1.1rem', marginBottom: '15px' }}>Explorar la App</h2>
             <FeatureCarousel />
+
+            {/* Beginner Guides Section */}
+            <BeginnerGuides />
 
         </div>
     );

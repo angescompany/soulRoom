@@ -8,7 +8,11 @@ import Bible from './components/Features/Bible/Bible';
 import Profile from './components/Features/Profile/Profile';
 import PWAInstallPrompt from './components/Shared/PWAInstallPrompt';
 
+import LandingPage from './components/Features/Onboarding/LandingPage';
+
 function App() {
+  const hasVisited = localStorage.getItem('hasVisited');
+
   return (
     <Router>
       <div className="app-container">
@@ -16,7 +20,8 @@ function App() {
         {/* Main Content Area */}
         <div className="content-area">
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/welcome" element={<LandingPage />} />
+            <Route path="/" element={hasVisited ? <Home /> : <Navigate to="/welcome" replace />} />
             <Route path="/fasting" element={<Fasting />} />
             <Route path="/prayer" element={<Prayer />} />
             <Route path="/bible" element={<Bible />} />
@@ -25,8 +30,8 @@ function App() {
           </Routes>
         </div>
 
-        {/* Global Navigation */}
-        <BottomNav />
+        {/* Global Navigation - Hide on welcome screen */}
+        {!window.location.pathname.includes('/welcome') && <BottomNav />}
         <PWAInstallPrompt />
 
       </div>

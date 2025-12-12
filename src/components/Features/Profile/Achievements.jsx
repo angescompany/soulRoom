@@ -11,8 +11,7 @@ const Achievements = ({ stats }) => {
     ];
 
     return (
-        <div className="achievements-section" style={{ marginTop: '2rem' }}>
-            <h3>Logros</h3>
+        <div className="achievements-section">
             <div className="achievements-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '1rem' }}>
                 {list.map(ach => (
                     <div
