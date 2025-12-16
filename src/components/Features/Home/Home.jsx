@@ -380,7 +380,7 @@ const FeatureCarousel = () => {
         <div style={{ paddingBottom: '20px' }}>
             <div style={{
                 position: 'relative',
-                height: '180px',
+                height: '250px',
                 overflow: 'hidden',
                 borderRadius: '20px',
                 cursor: 'pointer'
