@@ -127,6 +127,15 @@ export const AppProvider = ({ children }) => {
                 if (data.prayerAlarms) setPrayerAlarms(prev => JSON.stringify(prev) !== JSON.stringify(data.prayerAlarms) ? data.prayerAlarms : prev);
             }
             setIsDataLoaded(true); // Mark as loaded so we can start saving changes
+        }, (error) => {
+            console.error("Firestore Error:", error);
+            // If permission denied, likely rules not deployed or caching issue. 
+            // We allow local usage by marking data as loaded effectively (or just leave it, but that blocks saving).
+            // Let's set loaded to true so user can at least use app locally even if sync fails
+            if (error.code === 'permission-denied') {
+                console.warn("Permission denied. Ensure Firestore rules are deployed.");
+            }
+            setIsDataLoaded(true);
         });
         return () => unsubscribe();
     }, [user]);

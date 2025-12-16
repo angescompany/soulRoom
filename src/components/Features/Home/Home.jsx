@@ -148,7 +148,10 @@ const Home = () => {
                 className="glass-card verse-card-main"
                 onClick={() => setIsExpanded(true)}
                 style={{
-                    background: `linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('${bgUrl}') center/cover no-repeat`,
+                    backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('${bgUrl}')`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundColor: '#2d3436', // Fallback color
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     marginBottom: '30px',
                     position: 'relative',
@@ -190,71 +193,76 @@ const Home = () => {
 
 
             {/* FULLSCREEN MODAL */}
-            {isExpanded && (
-                <div style={{
-                    position: 'fixed',
-                    top: 0, left: 0, right: 0, bottom: 0,
-                    zIndex: 9999,
-                    background: `linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.9)), url('${bgUrl}') center/cover no-repeat`,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    padding: '30px',
-                    animation: 'fadeIn 0.3s ease'
-                }}>
-                    <button
-                        onClick={() => setIsExpanded(false)}
-                        style={{
-                            position: 'absolute', top: '20px', right: '20px',
-                            background: 'rgba(0,0,0,0.5)', border: 'none', borderRadius: '50%',
-                            width: '40px', height: '40px', color: '#fff',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            cursor: 'pointer'
-                        }}
-                    >
-                        <FaTimes size={20} />
-                    </button>
-
-                    <div style={{ width: '100%', maxWidth: '600px', textAlign: 'center' }}>
-                        <p style={{
-                            fontFamily: 'var(--font-serif)',
-                            fontSize: '1.8rem',
-                            fontStyle: 'italic',
-                            lineHeight: '1.6',
-                            color: '#fff',
-                            marginBottom: '20px',
-                            textShadow: '0 2px 10px rgba(0,0,0,0.7)'
-                        }}>
-                            "{todayVerse.text}"
-                        </p>
-                        <p style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#fff', textShadow: '0 2px 10px rgba(0,0,0,0.7)' }}>— {todayVerse.reference}</p>
-                    </div>
-
-                    {/* Bottom Actions - Fullscreen */}
+            {
+                isExpanded && (
                     <div style={{
-                        position: 'absolute',
-                        bottom: '40px',
-                        left: '0', right: '0',
+                        position: 'fixed',
+                        top: 0, left: 0, right: 0, bottom: 0,
+                        zIndex: 9999,
+                        backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.9)), url('${bgUrl}')`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundColor: '#2d3436',
                         display: 'flex',
+                        flexDirection: 'column',
                         justifyContent: 'center',
-                        gap: '40px'
+                        alignItems: 'center',
+                        padding: '30px',
+                        animation: 'fadeIn 0.3s ease'
                     }}>
-                        <button onClick={() => setLiked(!liked)} style={{ background: 'none', border: 'none', color: liked ? '#e74c3c' : '#fff', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px' }}>
-                            <FaHeart size={24} />
-                            <span style={{ fontSize: '0.8rem', opacity: 0.8 }}>Me Gusta</span>
+                        <button
+                            onClick={() => setIsExpanded(false)}
+                            style={{
+                                position: 'absolute', top: '20px', right: '20px',
+                                background: 'rgba(0,0,0,0.5)', border: 'none', borderRadius: '50%',
+                                width: '40px', height: '40px', color: '#fff',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            <FaTimes size={20} />
                         </button>
-                        <button onClick={handleShare} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px' }}>
-                            <FaShareAlt size={24} />
-                            <span style={{ fontSize: '0.8rem', opacity: 0.8 }}>Compartir</span>
-                        </button>
-                        <NavLink to="/bible" state={{ bookId: todayVerse.bookId, chapter: todayVerse.chapter }} onClick={() => setIsExpanded(false)} style={{ textDecoration: 'none', color: '#fff', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px' }}>
-                            <FaBook size={24} />
-                            <span style={{ fontSize: '0.8rem', opacity: 0.8 }}>Leer</span>
-                        </NavLink>
+
+                        <div style={{ width: '100%', maxWidth: '600px', textAlign: 'center' }}>
+                            <p style={{
+                                fontFamily: 'var(--font-serif)',
+                                fontSize: '1.8rem',
+                                fontStyle: 'italic',
+                                lineHeight: '1.6',
+                                color: '#fff',
+                                marginBottom: '20px',
+                                textShadow: '0 2px 10px rgba(0,0,0,0.7)'
+                            }}>
+                                "{todayVerse.text}"
+                            </p>
+                            <p style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#fff', textShadow: '0 2px 10px rgba(0,0,0,0.7)' }}>— {todayVerse.reference}</p>
+                        </div>
+
+                        {/* Bottom Actions - Fullscreen */}
+                        <div style={{
+                            position: 'absolute',
+                            bottom: '40px',
+                            left: '0', right: '0',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            gap: '40px'
+                        }}>
+                            <button onClick={() => setLiked(!liked)} style={{ background: 'none', border: 'none', color: liked ? '#e74c3c' : '#fff', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px' }}>
+                                <FaHeart size={24} />
+                                <span style={{ fontSize: '0.8rem', opacity: 0.8 }}>Me Gusta</span>
+                            </button>
+                            <button onClick={handleShare} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px' }}>
+                                <FaShareAlt size={24} />
+                                <span style={{ fontSize: '0.8rem', opacity: 0.8 }}>Compartir</span>
+                            </button>
+                            <NavLink to="/bible" state={{ bookId: todayVerse.bookId, chapter: todayVerse.chapter }} onClick={() => setIsExpanded(false)} style={{ textDecoration: 'none', color: '#fff', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px' }}>
+                                <FaBook size={24} />
+                                <span style={{ fontSize: '0.8rem', opacity: 0.8 }}>Leer</span>
+                            </NavLink>
+                        </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
             {/* Feature Carousel (Explorar la App) */}
             <h2 style={{ fontSize: '1.1rem', marginBottom: '15px' }}>Explorar la App</h2>
@@ -263,7 +271,7 @@ const Home = () => {
             {/* Beginner Guides Section */}
             <BeginnerGuides />
 
-        </div>
+        </div >
     );
 };
 
