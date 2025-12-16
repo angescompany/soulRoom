@@ -416,31 +416,42 @@ const FeatureCarousel = () => {
                                 zIndex: isActive ? 2 : 1
                             }}
                         >
-                            <div style={{ flex: 1, paddingRight: '10px' }}>
+                            <div style={{
+                                flex: 1,
+                                paddingRight: '10px',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                textAlign: 'center',
+                                zIndex: 2
+                            }}>
                                 <div style={{
                                     background: 'rgba(255,255,255,0.2)',
-                                    width: '40px', height: '40px',
+                                    width: '50px', height: '50px',
                                     borderRadius: '50%',
                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                                     marginBottom: '15px',
-                                    fontSize: '1.2rem'
+                                    fontSize: '1.4rem',
+                                    boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
                                 }}>
                                     {feature.icon}
                                 </div>
-                                <h3 style={{ margin: '0 0 5px 0', fontSize: '1.3rem', lineHeight: '1.2' }}>{feature.title}</h3>
-                                <p style={{ margin: 0, fontWeight: '600', fontSize: '1rem', lineHeight: '1.4', color: '#ffffff', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>{feature.subtitle}</p>
+                                <h3 style={{ margin: '0 0 8px 0', fontSize: '1.4rem', lineHeight: '1.2', fontWeight: '800' }}>{feature.title}</h3>
+                                <p style={{ margin: '0 0 20px 0', fontWeight: '500', fontSize: '0.95rem', lineHeight: '1.4', color: 'rgba(255,255,255,0.95)', maxWidth: '90%' }}>{feature.subtitle}</p>
 
                                 <span style={{
                                     display: 'inline-block',
-                                    marginTop: '15px',
                                     background: 'rgba(255,255,255,0.25)',
-                                    padding: '8px 20px',
-                                    borderRadius: '20px',
+                                    padding: '10px 25px',
+                                    borderRadius: '25px',
                                     textDecoration: 'none',
                                     color: '#fff',
                                     fontWeight: 'bold',
-                                    fontSize: '0.85rem',
-                                    backdropFilter: 'blur(5px)'
+                                    fontSize: '0.9rem',
+                                    backdropFilter: 'blur(5px)',
+                                    boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
+                                    marginBottom: '5px'
                                 }}>
                                     {feature.btnText}
                                 </span>
