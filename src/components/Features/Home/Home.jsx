@@ -87,8 +87,65 @@ const Home = () => {
         return { hours, streak: uniqueDays, isActive };
     }, [prayingHistory]);
 
-    // Background Image from Verse
-    const bgUrl = todayVerse.image;
+    // Background Image Logic (Pexels + Cache)
+    const [bgUrl, setBgUrl] = useState(todayVerse.image); // Default to static image initially
+
+    useEffect(() => {
+        const fetchPexelsImage = async () => {
+            const today = new Date().toISOString().split('T')[0];
+            const cacheKey = `dailyImage_${today}`;
+            const cachedData = localStorage.getItem(cacheKey);
+
+            if (cachedData) {
+                setBgUrl(cachedData);
+                return;
+            }
+
+            try {
+                const apiKey = import.meta.env.VITE_PEXELS_API_KEY;
+                if (!apiKey) {
+                    console.warn("Pexels API Key missing");
+                    return;
+                }
+
+                // Fetch nature/landscape, orientation portrait or landscape depending on device? 
+                // Let's go generic 'nature landscape'.
+                // varying 'page' based on day of year to rotate images deterministically or random?
+                // Random is fine if cached for the day.
+                const randomPage = Math.floor(Math.random() * 100) + 1;
+                const response = await fetch(`https://api.pexels.com/v1/search?query=nature+landscape&per_page=1&page=${randomPage}&orientation=landscape`, {
+                    headers: {
+                        Authorization: apiKey
+                    }
+                });
+
+                if (!response.ok) throw new Error('Pexels API error');
+
+                const data = await response.json();
+                if (data.photos && data.photos.length > 0) {
+                    const imageUrl = data.photos[0].src.large2x; // High quality
+                    localStorage.setItem(cacheKey, imageUrl);
+                    setBgUrl(imageUrl);
+
+                    // Cleanup old cache text (optional, simpler to just leave it or generic cleanup)
+                    // Simple cleanup: remove keys not matching today?
+                    // Let's keep it simple for now. 
+                    // Actually, let's remove yesterday's to prevent bloat logic later.
+                    Object.keys(localStorage).forEach(key => {
+                        if (key.startsWith('dailyImage_') && key !== cacheKey) {
+                            localStorage.removeItem(key);
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error("Failed to fetch Pexels image:", error);
+                // Fallback remains todayVerse.image
+            }
+        };
+
+        fetchPexelsImage();
+    }, []); // Run once on mount (daily check handled by cache logic on reload, user mostly reloads)
+
 
     return (
         <div className="home-container">
