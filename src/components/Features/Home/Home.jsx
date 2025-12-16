@@ -148,9 +148,7 @@ const Home = () => {
                 className="glass-card verse-card-main"
                 onClick={() => setIsExpanded(true)}
                 style={{
-                    backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('${bgUrl}')`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
+                    background: `linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('${bgUrl}') center/cover no-repeat`,
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     marginBottom: '30px',
                     position: 'relative',
@@ -197,9 +195,7 @@ const Home = () => {
                     position: 'fixed',
                     top: 0, left: 0, right: 0, bottom: 0,
                     zIndex: 9999,
-                    backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.9)), url('${bgUrl}')`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
+                    background: `linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.9)), url('${bgUrl}') center/cover no-repeat`,
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'center',
