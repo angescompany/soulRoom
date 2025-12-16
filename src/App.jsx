@@ -5,6 +5,7 @@ import Home from './components/Features/Home/Home';
 import Fasting from './components/Features/Fasting/Fasting';
 import Prayer from './components/Features/Prayer/Prayer';
 import Bible from './components/Features/Bible/Bible';
+import ReadingDashboard from './components/Features/Bible/ReadingDashboard';
 import Profile from './components/Features/Profile/Profile';
 import PWAInstallPrompt from './components/Shared/PWAInstallPrompt';
 
@@ -26,6 +27,7 @@ const AppContent = () => {
           <Route path="/" element={hasVisited ? <Home /> : <Navigate to="/welcome" replace />} />
           <Route path="/fasting" element={<Fasting />} />
           <Route path="/prayer" element={<Prayer />} />
+          <Route path="/read" element={<ReadingDashboard />} />
           <Route path="/bible" element={<Bible />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<Navigate to="/" replace />} />

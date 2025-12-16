@@ -17,9 +17,9 @@ const BottomNav = () => {
                 <FaPrayingHands />
                 <span>Orar</span>
             </NavLink>
-            <NavLink to="/bible" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+            <NavLink to="/read" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
                 <FaBookOpen />
-                <span>Biblia</span>
+                <span>Leer</span>
             </NavLink>
             <NavLink to="/profile" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
                 <FaUser />
