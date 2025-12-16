@@ -1,9 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAppContext } from '../../../context/AppContext';
 import './LandingPage.css';
+
+import { useAppContext } from '../../../context/AppContext';
 
 const LandingPage = () => {
     const navigate = useNavigate();
+    const { user } = useAppContext();
     const [currentScreen, setCurrentScreen] = useState(0);
     const totalScreens = 4;
     const isScrolling = useRef(false);
@@ -11,7 +15,11 @@ const LandingPage = () => {
 
     const handleStart = () => {
         localStorage.setItem('hasVisited', 'true');
-        navigate('/');
+        if (user) {
+            navigate('/');
+        } else {
+            navigate('/auth');
+        }
     };
 
     const nextScreen = () => {

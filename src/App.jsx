@@ -9,10 +9,11 @@ import Profile from './components/Features/Profile/Profile';
 import PWAInstallPrompt from './components/Shared/PWAInstallPrompt';
 
 import LandingPage from './components/Features/Onboarding/LandingPage';
+import AuthPage from './components/Features/Onboarding/AuthPage';
 
 const AppContent = () => {
   const location = useLocation();
-  const isOnboarding = location.pathname === '/welcome';
+  const isOnboarding = location.pathname === '/welcome' || location.pathname === '/auth';
   const hasVisited = localStorage.getItem('hasVisited');
 
   return (
@@ -21,6 +22,7 @@ const AppContent = () => {
       <div className="content-area" style={isOnboarding ? { padding: 0, paddingBottom: 0 } : {}}>
         <Routes>
           <Route path="/welcome" element={<LandingPage />} />
+          <Route path="/auth" element={<AuthPage />} />
           <Route path="/" element={hasVisited ? <Home /> : <Navigate to="/welcome" replace />} />
           <Route path="/fasting" element={<Fasting />} />
           <Route path="/prayer" element={<Prayer />} />
