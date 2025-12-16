@@ -20,7 +20,8 @@ const Home = () => {
     }, []);
 
     // Get Daily Verse
-    const todayVerse = useMemo(() => {
+    // Get Daily Verse Logic
+    const getDailyVerse = () => {
         const now = new Date();
         const start = new Date(now.getFullYear(), 0, 0); // Start of year
         const diff = now - start;
@@ -29,6 +30,34 @@ const Home = () => {
 
         const verseIndex = dayOfYear % DAILY_VERSES.length;
         return DAILY_VERSES[verseIndex];
+    };
+
+    const [todayVerse, setTodayVerse] = useState(getDailyVerse());
+
+    useEffect(() => {
+        // Update check every minute
+        const interval = setInterval(() => {
+            const verse = getDailyVerse();
+            // Optional: Only update if changed, but object ref might differ. 
+            // In this specific calc, logic is deterministic by day.
+            // We can just set it, React diffing handles simple object equality if ref same? 
+            // Actually DAILY_VERSES[i] is same ref. So it will be efficient.
+            setTodayVerse(verse);
+        }, 60000); // Check every minute
+
+        // Update on visibility change (user comes back to app)
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'visible') {
+                setTodayVerse(getDailyVerse());
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        return () => {
+            clearInterval(interval);
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
     }, []);
 
     const handleShare = () => {

@@ -123,6 +123,8 @@ export const AppProvider = ({ children }) => {
                 if (data.bibleState) setBibleState(prev => JSON.stringify(prev) !== JSON.stringify(data.bibleState) ? data.bibleState : prev);
                 if (data.activeFastingPlanId) setActiveFastingPlanId(prev => prev !== data.activeFastingPlanId ? data.activeFastingPlanId : prev);
                 if (data.warRoomState) setWarRoomState(prev => JSON.stringify(prev) !== JSON.stringify(data.warRoomState) ? data.warRoomState : prev);
+                if (data.prayerRequests) setPrayerRequests(prev => JSON.stringify(prev) !== JSON.stringify(data.prayerRequests) ? data.prayerRequests : prev);
+                if (data.prayerAlarms) setPrayerAlarms(prev => JSON.stringify(prev) !== JSON.stringify(data.prayerAlarms) ? data.prayerAlarms : prev);
             }
             setIsDataLoaded(true); // Mark as loaded so we can start saving changes
         });
@@ -237,7 +239,7 @@ export const AppProvider = ({ children }) => {
 
     useEffect(() => {
         localStorage.setItem('prayerAlarms', JSON.stringify(prayerAlarms));
-        // saveToFirestore('prayerAlarms', prayerAlarms); // Optional: Sync if desired
+        saveToFirestore('prayerAlarms', prayerAlarms);
     }, [prayerAlarms, user]);
 
     // Check Alarms Interval
