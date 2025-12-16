@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../../../context/AppContext';
 import './LandingPage.css';
 
-import { useAppContext } from '../../../context/AppContext';
+
 
 const LandingPage = () => {
     const navigate = useNavigate();
