@@ -1,6 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaBookOpen, FaStar } from 'react-icons/fa';
+import BeginnerGuides from '../Home/BeginnerGuides';
+import TopicsOfInterest from '../Topics/TopicsOfInterest';
 
 const ReadingDashboard = () => {
     const navigate = useNavigate();
@@ -61,18 +63,13 @@ const ReadingDashboard = () => {
                     }} />
                 </div>
 
-                {/* Topics of Interest Section */}
                 <h3 style={{ fontSize: '1.2rem', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <FaStar color="var(--accent)" /> Temas de Interés
+                    <FaStar color="var(--accent)" /> Temas de Interés y Guías
                 </h3>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '15px' }}>
-                    {/* Placeholders for future content */}
-                    <div className="glass-card" style={{ padding: '20px', opacity: 0.7 }}>
-                        <h4 style={{ marginBottom: '5px' }}>Próximamente...</h4>
-                        <p style={{ fontSize: '0.9rem', opacity: 0.6 }}>Estudios bíblicos y devocionales por tema.</p>
-                    </div>
-                </div>
+                <TopicsOfInterest />
+
+                <BeginnerGuides />
 
             </div>
         </div>

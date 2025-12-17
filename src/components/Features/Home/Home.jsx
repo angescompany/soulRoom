@@ -4,7 +4,6 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../../../context/AppContext';
 
 import { DAILY_VERSES } from '../../../data/dailyVerses';
-import BeginnerGuides from './BeginnerGuides';
 
 const Home = () => {
     const { user, prayingHistory } = useAppContext();
@@ -324,9 +323,6 @@ const Home = () => {
             {/* Feature Carousel (Explorar la App) */}
             <h2 style={{ fontSize: '1.1rem', marginBottom: '15px' }}>Explorar la App</h2>
             <FeatureCarousel />
-
-            {/* Beginner Guides Section */}
-            <BeginnerGuides />
 
         </div >
     );

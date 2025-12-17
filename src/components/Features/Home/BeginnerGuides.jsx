@@ -234,71 +234,150 @@ const GUIDES_DATA = [
 ];
 
 const BeginnerGuides = () => {
+    const [isOpen, setIsOpen] = useState(false);
     const [selectedGuide, setSelectedGuide] = useState(null);
 
     return (
-        <div style={{ marginTop: '30px', marginBottom: '40px' }}>
-            <h2 style={{ fontSize: '1.1rem', marginBottom: '15px', color: '#fff' }}>Primeros Pasos en tu Fe</h2>
-
-            <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-                gap: '15px'
-            }}>
-                {GUIDES_DATA.map((guide) => (
-                    <div
-                        key={guide.id}
-                        onClick={() => setSelectedGuide(guide)}
-                        style={{
-                            background: 'rgba(255, 255, 255, 0.05)',
-                            border: '1px solid rgba(255, 255, 255, 0.1)',
-                            borderRadius: '16px',
-                            padding: '20px',
-                            cursor: 'pointer',
-                            transition: 'transform 0.2s ease, background 0.2s ease',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '15px',
-                            position: 'relative',
-                            overflow: 'hidden'
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.transform = 'translateY(-3px)';
-                            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.transform = 'translateY(0)';
-                            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
-                        }}
-                    >
-                        {/* Icon Box */}
-                        <div style={{
-                            width: '50px',
-                            height: '50px',
-                            borderRadius: '12px',
-                            background: guide.gradient,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            color: '#fff',
-                            fontSize: '1.2rem',
-                            flexShrink: 0
-                        }}>
-                            {guide.icon}
-                        </div>
-
-                        {/* Text */}
-                        <div style={{ flex: 1 }}>
-                            <h3 style={{ fontSize: '1rem', fontWeight: 'bold', margin: '0 0 5px 0', color: '#fff' }}>{guide.title}</h3>
-                            <p style={{ fontSize: '0.8rem', margin: 0, color: 'rgba(255, 255, 255, 0.7)' }}>{guide.subtitle}</p>
-                        </div>
-
-                        <FaChevronRight size={14} color="rgba(255,255,255,0.3)" />
+        <div style={{ marginTop: '20px', marginBottom: '20px' }}>
+            {/* Trigger Button/Card */}
+            <div
+                onClick={() => setIsOpen(true)}
+                style={{
+                    background: 'linear-gradient(to right, #e65c00, #F9D423)',
+                    borderRadius: '16px',
+                    padding: '20px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
+                    transition: 'transform 0.2s',
+                    color: '#fff',
+                    marginBottom: '15px'
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.02)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+            >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                    <div style={{
+                        background: 'rgba(255,255,255,0.2)',
+                        padding: '12px',
+                        borderRadius: '50%',
+                        fontSize: '1.5rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                    }}>
+                        <FaCloud />
                     </div>
-                ))}
+                    <div>
+                        <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 'bold' }}>Primeros Pasos</h3>
+                        <p style={{ margin: 0, fontSize: '0.9rem', opacity: 0.9 }}>Guías esenciales para tu fe.</p>
+                    </div>
+                </div>
+                <FaChevronRight />
             </div>
 
-            {/* Modal */}
+            {/* LIST MODAL */}
+            {isOpen && (
+                <div style={{
+                    position: 'fixed',
+                    top: 0, left: 0, right: 0, bottom: 0,
+                    zIndex: 9999,
+                    background: '#121212',
+                    overflowY: 'auto',
+                    animation: 'fadeIn 0.2s ease',
+                    display: 'flex',
+                    flexDirection: 'column'
+                }}>
+                    {/* Header */}
+                    <div style={{
+                        padding: '20px',
+                        background: 'rgba(255,255,255,0.05)',
+                        backdropFilter: 'blur(10px)',
+                        position: 'sticky',
+                        top: 0,
+                        zIndex: 10,
+                        borderBottom: '1px solid rgba(255,255,255,0.1)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between'
+                    }}>
+                        <h2 style={{ margin: 0, color: '#fff', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <FaCloud color="#e65c00" /> Primeros Pasos en tu Fe
+                        </h2>
+                        <button
+                            onClick={() => setIsOpen(false)}
+                            style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', padding: '8px', borderRadius: '50%', cursor: 'pointer', display: 'flex' }}
+                        >
+                            <FaTimes size={20} />
+                        </button>
+                    </div>
+
+                    {/* Original Grid Content */}
+                    <div style={{ padding: '20px' }}>
+                        <div style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                            gap: '15px'
+                        }}>
+                            {GUIDES_DATA.map((guide) => (
+                                <div
+                                    key={guide.id}
+                                    onClick={() => setSelectedGuide(guide)}
+                                    style={{
+                                        background: 'rgba(255, 255, 255, 0.05)',
+                                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                                        borderRadius: '16px',
+                                        padding: '20px',
+                                        cursor: 'pointer',
+                                        transition: 'transform 0.2s ease, background 0.2s ease',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '15px',
+                                        position: 'relative',
+                                        overflow: 'hidden'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.transform = 'translateY(-3px)';
+                                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.transform = 'translateY(0)';
+                                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+                                    }}
+                                >
+                                    {/* Icon Box */}
+                                    <div style={{
+                                        width: '50px',
+                                        height: '50px',
+                                        borderRadius: '12px',
+                                        background: guide.gradient,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        color: '#fff',
+                                        fontSize: '1.2rem',
+                                        flexShrink: 0
+                                    }}>
+                                        {guide.icon}
+                                    </div>
+
+                                    {/* Text */}
+                                    <div style={{ flex: 1 }}>
+                                        <h3 style={{ fontSize: '1rem', fontWeight: 'bold', margin: '0 0 5px 0', color: '#fff' }}>{guide.title}</h3>
+                                        <p style={{ fontSize: '0.8rem', margin: 0, color: 'rgba(255, 255, 255, 0.7)' }}>{guide.subtitle}</p>
+                                    </div>
+
+                                    <FaChevronRight size={14} color="rgba(255,255,255,0.3)" />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* DETAIL MODAL - Remains Same but Higher Z-Index */}
             {selectedGuide && (
                 <div style={{
                     position: 'fixed',
