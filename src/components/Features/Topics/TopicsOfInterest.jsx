@@ -302,7 +302,7 @@ const TopicsOfInterest = () => {
                     </div>
                     <div>
                         <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 'bold' }}>Temas de Interés</h3>
-                        <p style={{ margin: 0, fontSize: '0.9rem', opacity: 0.8 }}>Preguntas difíciles, respuestas bíblicas.</p>
+                        <p style={{ margin: 0, fontSize: '0.9rem', color: 'rgba(255,255,255,0.9)' }}>Preguntas difíciles, respuestas bíblicas.</p>
                     </div>
                 </div>
                 <FaChevronRight />

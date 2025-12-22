@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FaBookOpen, FaStar } from 'react-icons/fa';
 import BeginnerGuides from '../Home/BeginnerGuides';
 import TopicsOfInterest from '../Topics/TopicsOfInterest';
+import VersesByTopic from './VersesByTopic';
 
 const ReadingDashboard = () => {
     const navigate = useNavigate();
@@ -68,6 +69,8 @@ const ReadingDashboard = () => {
                 </h3>
 
                 <TopicsOfInterest />
+
+                <VersesByTopic />
 
                 <BeginnerGuides />
 

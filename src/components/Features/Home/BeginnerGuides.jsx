@@ -272,7 +272,7 @@ const BeginnerGuides = () => {
                     </div>
                     <div>
                         <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 'bold' }}>Primeros Pasos</h3>
-                        <p style={{ margin: 0, fontSize: '0.9rem', opacity: 0.9 }}>Guías esenciales para tu fe.</p>
+                        <p style={{ margin: 0, fontSize: '0.9rem', color: 'rgba(255,255,255,0.95)' }}>Guías esenciales para tu fe.</p>
                     </div>
                 </div>
                 <FaChevronRight />

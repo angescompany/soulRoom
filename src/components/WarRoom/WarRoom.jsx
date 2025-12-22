@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FaPlay, FaPause, FaVolumeUp, FaTimes, FaCloudRain, FaMusic, FaPlaceOfWorship, FaBookOpen, FaPencilAlt, FaHome, FaHeartbeat, FaCoins, FaChild, FaRing, FaCloudSun, FaHandHoldingHeart, FaShieldAlt, FaMountain } from 'react-icons/fa';
+import { FaPlay, FaPause, FaVolumeUp, FaTimes, FaCloudRain, FaMusic, FaPlaceOfWorship, FaBookOpen, FaPencilAlt, FaHome, FaHeartbeat, FaCoins, FaChild, FaRing, FaCloudSun, FaHandHoldingHeart, FaShieldAlt, FaMountain, FaYoutube } from 'react-icons/fa';
 import { useAudio } from '../../hooks/useAudio';
 import { useAppContext } from '../../context/AppContext';
 import TimerDisplay from '../Shared/TimerDisplay';
@@ -166,6 +166,25 @@ const WarRoom = ({ timer, onClose, initialGuideId, onGuideSelect }) => {
     const [selectedGuide, setSelectedGuide] = useState(null);
     const [guideMode, setGuideMode] = useState('simple'); // 'simple' or 'deep'
     const [showGuideSelector, setShowGuideSelector] = useState(false);
+    const [activeVideo, setActiveVideo] = useState(null);
+
+    // Videos de oración guiada
+    const PRAYER_VIDEOS = [
+        {
+            id: 'warfare',
+            title: 'Oración de Guerra Espiritual',
+            subtitle: 'Versículos para derrotar huestes de maldad',
+            videoId: 'f0L2PPK1VMI',
+            color: '#ff6b6b'
+        },
+        {
+            id: 'blessing',
+            title: 'Oración de Bendición',
+            subtitle: 'Versículos para pedir bendición y favor',
+            videoId: 'PxnRFloLizs',
+            color: '#ffd700'
+        }
+    ];
 
     // Auto-select guide if ID passed
     useEffect(() => {
@@ -249,7 +268,7 @@ const WarRoom = ({ timer, onClose, initialGuideId, onGuideSelect }) => {
                         "Cierra la puerta, y ora a tu Padre que está en secreto..."
                     </p>
 
-                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', overflowY: 'auto', width: '100%', paddingBottom: '100px', overscrollBehavior: 'contain' }}>
+                    <div className="scroll-hide" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', overflowY: 'auto', width: '100%', paddingBottom: '100px', overscrollBehavior: 'contain' }}>
                         <div style={{ marginBottom: '30px' }}>
                             <TimerDisplay
                                 time={timer.formatTime()}
@@ -307,6 +326,51 @@ const WarRoom = ({ timer, onClose, initialGuideId, onGuideSelect }) => {
                             >
                                 <FaBookOpen color="var(--accent)" /> Abrir Manual de Guerra
                             </button>
+                        </div>
+
+                        {/* Sección de Videos de Oración */}
+                        <div className="glass-card" style={{ width: '100%', maxWidth: '400px', padding: '15px', marginBottom: '20px' }}>
+                            <h3 style={{ fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '15px', opacity: 0.8 }}>
+                                <FaYoutube color="#ff0000" /> Oraciones Guiadas
+                            </h3>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                {PRAYER_VIDEOS.map(video => (
+                                    <button
+                                        key={video.id}
+                                        onClick={() => setActiveVideo(video)}
+                                        style={{
+                                            background: `linear-gradient(135deg, ${video.color}22 0%, ${video.color}11 100%)`,
+                                            border: `1px solid ${video.color}44`,
+                                            borderRadius: '12px',
+                                            padding: '15px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '12px',
+                                            cursor: 'pointer',
+                                            textAlign: 'left',
+                                            color: '#fff',
+                                            transition: 'all 0.2s'
+                                        }}
+                                    >
+                                        <div style={{
+                                            width: '45px',
+                                            height: '45px',
+                                            borderRadius: '50%',
+                                            background: `${video.color}33`,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            flexShrink: 0
+                                        }}>
+                                            <FaPlay color={video.color} size={16} />
+                                        </div>
+                                        <div>
+                                            <div style={{ fontWeight: 600, fontSize: '0.95rem', marginBottom: '3px' }}>{video.title}</div>
+                                            <div style={{ fontSize: '0.75rem', opacity: 0.7 }}>{video.subtitle}</div>
+                                        </div>
+                                    </button>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </>
@@ -479,6 +543,82 @@ const WarRoom = ({ timer, onClose, initialGuideId, onGuideSelect }) => {
                 </div>
             )
             }
+
+            {/* Video Player Modal */}
+            {activeVideo && (
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: 'rgba(0, 0, 0, 0.95)',
+                    zIndex: 3000,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    padding: '20px'
+                }}>
+                    {/* Header */}
+                    <div style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        marginBottom: '15px'
+                    }}>
+                        {/* Close button row */}
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
+                            <button
+                                onClick={() => setActiveVideo(null)}
+                                style={{
+                                    background: 'rgba(255, 255, 255, 0.15)',
+                                    border: 'none',
+                                    color: 'white',
+                                    width: '40px',
+                                    height: '40px',
+                                    borderRadius: '50%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    cursor: 'pointer',
+                                    fontSize: '1rem'
+                                }}
+                            >
+                                <FaTimes />
+                            </button>
+                        </div>
+                        {/* Title */}
+                        <div style={{ textAlign: 'center' }}>
+                            <h3 style={{ margin: 0, fontSize: '1.2rem', color: '#fff' }}>{activeVideo.title}</h3>
+                            <p style={{ margin: '5px 0 0 0', fontSize: '0.85rem', opacity: 0.7, color: '#fff' }}>{activeVideo.subtitle}</p>
+                        </div>
+                    </div>
+
+                    {/* Video Container */}
+                    <div style={{
+                        flex: 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: '15px',
+                        overflow: 'hidden'
+                    }}>
+                        <iframe
+                            width="100%"
+                            height="100%"
+                            src={`https://www.youtube.com/embed/${activeVideo.videoId}?autoplay=1&rel=0`}
+                            title={activeVideo.title}
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                            style={{
+                                maxWidth: '100%',
+                                maxHeight: '70vh',
+                                aspectRatio: '16/9',
+                                borderRadius: '15px'
+                            }}
+                        ></iframe>
+                    </div>
+                </div>
+            )}
         </div >
     );
 };
