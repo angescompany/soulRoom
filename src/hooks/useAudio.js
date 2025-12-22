@@ -1,9 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
 
+// Import audio files
+import hebrewMusicFile from '../assets/Fondo Musical para orar.mp3';
+import shofarMusicFile from '../assets/Shofar guerra espiritual.mp3';
+
 export const useAudio = () => {
     const audioCtxRef = useRef(null);
     const gainNodeRef = useRef(null);
     const sourceRef = useRef(null);
+    const htmlAudioRef = useRef(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTrack, setCurrentTrack] = useState(null);
     const [volume, setVolume] = useState(0.5);
@@ -124,27 +129,78 @@ export const useAudio = () => {
         };
     };
 
-    const playTrack = (type) => {
-        initAudio();
-        stop(false);
+    const playShofar = () => {
+        const audio = new Audio(shofarMusicFile);
+        audio.loop = true;
+        audio.volume = volume;
+        htmlAudioRef.current = audio;
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+            playPromise.catch(error => console.log('Audio play was prevented:', error));
+        }
+        return {
+            stop: () => { audio.pause(); audio.currentTime = 0; },
+            disconnect: () => { audio.src = ''; }
+        };
+    };
 
-        // Reset gain
-        gainNodeRef.current.gain.setValueAtTime(volume, audioCtxRef.current.currentTime);
+    const playHebrew = () => {
+        const audio = new Audio(hebrewMusicFile);
+        audio.loop = true;
+        audio.volume = volume;
+        htmlAudioRef.current = audio;
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+            playPromise.catch(error => console.log('Audio play was prevented:', error));
+        }
+        return {
+            stop: () => { audio.pause(); audio.currentTime = 0; },
+            disconnect: () => { audio.src = ''; }
+        };
+    };
+
+    const playTrack = (type) => {
+        // Toggle off if same track
+        if (currentTrack === type) {
+            stop();
+            return;
+        }
+
+        // Stop HTML audio if playing
+        if (htmlAudioRef.current) {
+            htmlAudioRef.current.pause();
+            htmlAudioRef.current.currentTime = 0;
+            htmlAudioRef.current = null;
+        }
+
+        // Stop Web Audio sources
+        if (sourceRef.current) {
+            if (sourceRef.current.stop) sourceRef.current.stop();
+            if (sourceRef.current.disconnect) sourceRef.current.disconnect();
+            sourceRef.current = null;
+        }
 
         let source;
-        if (type === 'rain') source = playRain();
-        else if (type === 'piano') source = playAmbientPad();
-        else if (type === 'worship') source = playDrone();
+        if (type === 'shofar') {
+            source = playShofar();
+        } else if (type === 'hebrew') {
+            source = playHebrew();
+        }
 
-        sourceRef.current = source;
-        setIsPlaying(true);
-        setCurrentTrack(type);
+        if (source) {
+            sourceRef.current = source;
+            setIsPlaying(true);
+            setCurrentTrack(type);
+        }
     };
 
     const setVolumeLevel = (val) => {
         setVolume(val);
-        if (gainNodeRef.current) {
+        if (gainNodeRef.current && audioCtxRef.current) {
             gainNodeRef.current.gain.setValueAtTime(val, audioCtxRef.current.currentTime);
+        }
+        if (htmlAudioRef.current) {
+            htmlAudioRef.current.volume = val;
         }
     };
 
@@ -152,6 +208,10 @@ export const useAudio = () => {
     useEffect(() => {
         return () => {
             if (audioCtxRef.current) audioCtxRef.current.close();
+            if (htmlAudioRef.current) {
+                htmlAudioRef.current.pause();
+                htmlAudioRef.current = null;
+            }
         };
     }, []);
 

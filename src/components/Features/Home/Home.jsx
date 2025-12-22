@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { FaUtensils, FaPrayingHands, FaBookOpen, FaBolt, FaHeart, FaShareAlt, FaBook, FaTimes } from 'react-icons/fa';
+import { FaUtensils, FaPrayingHands, FaBookOpen, FaBolt, FaHeart, FaShareAlt, FaBook, FaTimes, FaLightbulb } from 'react-icons/fa';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../../../context/AppContext';
+import { generateReflection } from '../../../services/geminiService';
 
 import { DAILY_VERSES } from '../../../data/dailyVerses';
 
@@ -10,6 +11,10 @@ const Home = () => {
     const [greeting, setGreeting] = useState('Hola');
     const [liked, setLiked] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
+    const [showReflection, setShowReflection] = useState(false);
+    const [reflection, setReflection] = useState('');
+    const [isLoadingReflection, setIsLoadingReflection] = useState(false);
+    const [reflectionError, setReflectionError] = useState(null);
 
     useEffect(() => {
         const hour = new Date().getHours();
@@ -68,6 +73,22 @@ const Home = () => {
             }).catch(console.error);
         } else {
             alert("Compartir no soportado en este navegador");
+        }
+    };
+
+    const handleReflection = async () => {
+        setShowReflection(true);
+        setIsLoadingReflection(true);
+        setReflectionError(null);
+        setReflection('');
+
+        try {
+            const generatedReflection = await generateReflection(todayVerse.text, todayVerse.reference);
+            setReflection(generatedReflection);
+        } catch (error) {
+            setReflectionError(error.message);
+        } finally {
+            setIsLoadingReflection(false);
         }
     };
 
@@ -301,7 +322,7 @@ const Home = () => {
                             left: '0', right: '0',
                             display: 'flex',
                             justifyContent: 'center',
-                            gap: '40px'
+                            gap: '30px'
                         }}>
                             <button onClick={() => setLiked(!liked)} style={{ background: 'none', border: 'none', color: liked ? '#e74c3c' : '#fff', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px' }}>
                                 <FaHeart size={24} />
@@ -311,6 +332,10 @@ const Home = () => {
                                 <FaShareAlt size={24} />
                                 <span style={{ fontSize: '0.8rem', opacity: 0.8 }}>Compartir</span>
                             </button>
+                            <button onClick={handleReflection} style={{ background: 'none', border: 'none', color: '#ffd700', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px' }}>
+                                <FaLightbulb size={24} />
+                                <span style={{ fontSize: '0.8rem', opacity: 0.8 }}>Reflexión</span>
+                            </button>
                             <NavLink to="/bible" state={{ bookId: todayVerse.bookId, chapter: todayVerse.chapter }} onClick={() => setIsExpanded(false)} style={{ textDecoration: 'none', color: '#fff', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px' }}>
                                 <FaBook size={24} />
                                 <span style={{ fontSize: '0.8rem', opacity: 0.8 }}>Leer</span>
@@ -319,6 +344,122 @@ const Home = () => {
                     </div>
                 )
             }
+
+            {/* Reflection Modal */}
+            {showReflection && (
+                <div style={{
+                    position: 'fixed',
+                    top: 0, left: 0, right: 0, bottom: 0,
+                    zIndex: 10000,
+                    background: 'rgba(0, 0, 0, 0.95)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    padding: '30px',
+                    animation: 'fadeIn 0.3s ease'
+                }}>
+                    <button
+                        onClick={() => setShowReflection(false)}
+                        style={{
+                            position: 'absolute', top: '20px', right: '20px',
+                            background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '50%',
+                            width: '40px', height: '40px', color: '#fff',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        <FaTimes size={20} />
+                    </button>
+
+                    <div style={{ width: '100%', maxWidth: '500px', textAlign: 'center' }}>
+                        {/* Header */}
+                        <div style={{ marginBottom: '25px' }}>
+                            <FaLightbulb size={40} color="#ffd700" />
+                            <h2 style={{ margin: '15px 0 5px 0', color: '#fff', fontSize: '1.4rem' }}>Reflexión del Día</h2>
+                            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem' }}>{todayVerse.reference}</p>
+                        </div>
+
+                        {/* Content */}
+                        <div className="glass-card" style={{ padding: '25px', textAlign: 'left' }}>
+                            {isLoadingReflection ? (
+                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px', padding: '20px' }}>
+                                    <div style={{
+                                        width: '40px',
+                                        height: '40px',
+                                        border: '3px solid rgba(255,215,0,0.3)',
+                                        borderTop: '3px solid #ffd700',
+                                        borderRadius: '50%',
+                                        animation: 'spin 1s linear infinite'
+                                    }} />
+                                    <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.95rem' }}>Generando reflexión...</p>
+                                    <style>{`
+                                        @keyframes spin {
+                                            0% { transform: rotate(0deg); }
+                                            100% { transform: rotate(360deg); }
+                                        }
+                                    `}</style>
+                                </div>
+                            ) : reflectionError ? (
+                                <div style={{ textAlign: 'center', color: '#ff6b6b' }}>
+                                    <p style={{ marginBottom: '15px' }}>{reflectionError}</p>
+                                    <button
+                                        onClick={handleReflection}
+                                        style={{
+                                            background: 'rgba(255,107,107,0.2)',
+                                            border: '1px solid #ff6b6b',
+                                            color: '#ff6b6b',
+                                            padding: '10px 20px',
+                                            borderRadius: '20px',
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        Reintentar
+                                    </button>
+                                </div>
+                            ) : (
+                                <p style={{
+                                    fontFamily: 'var(--font-serif)',
+                                    fontSize: '1.1rem',
+                                    lineHeight: '1.8',
+                                    color: '#fff'
+                                }}>
+                                    {reflection}
+                                </p>
+                            )}
+                        </div>
+
+                        {/* Share Reflection */}
+                        {reflection && !isLoadingReflection && (
+                            <button
+                                onClick={() => {
+                                    if (navigator.share) {
+                                        navigator.share({
+                                            title: 'Reflexión Bíblica',
+                                            text: `"${todayVerse.text}" — ${todayVerse.reference}\n\n📖 Reflexión:\n${reflection}`,
+                                        }).catch(console.error);
+                                    }
+                                }}
+                                style={{
+                                    marginTop: '20px',
+                                    background: 'linear-gradient(135deg, #ffd700 0%, #ffaa00 100%)',
+                                    border: 'none',
+                                    color: '#000',
+                                    padding: '12px 30px',
+                                    borderRadius: '25px',
+                                    fontWeight: 'bold',
+                                    cursor: 'pointer',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '8px'
+                                }}
+                            >
+                                <FaShareAlt /> Compartir Reflexión
+                            </button>
+                        )}
+                    </div>
+                </div>
+            )}
 
             {/* Feature Carousel (Explorar la App) */}
             <h2 style={{ fontSize: '1.1rem', marginBottom: '15px' }}>Explorar la App</h2>

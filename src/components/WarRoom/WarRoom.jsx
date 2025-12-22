@@ -293,10 +293,9 @@ const WarRoom = ({ timer, onClose, initialGuideId, onGuideSelect }) => {
                             <h3 style={{ fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', opacity: 0.8 }}>
                                 <FaVolumeUp /> Atmósfera
                             </h3>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', marginBottom: '15px' }}>
-                                <AudioButton icon={<FaCloudRain />} label="Lluvia" active={audio.currentTrack === 'rain'} onClick={() => audio.playTrack('rain')} />
-                                <AudioButton icon={<FaMusic />} label="Piano" active={audio.currentTrack === 'piano'} onClick={() => audio.playTrack('piano')} />
-                                <AudioButton icon={<FaPlaceOfWorship />} label="Adoración" active={audio.currentTrack === 'worship'} onClick={() => audio.playTrack('worship')} />
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '15px' }}>
+                                <AudioButton icon={<FaPlaceOfWorship />} label={audio.currentTrack === 'shofar' ? 'Pausar' : 'Shofar'} active={audio.currentTrack === 'shofar'} onClick={() => audio.playTrack('shofar')} />
+                                <AudioButton icon={<FaMusic />} label={audio.currentTrack === 'hebrew' ? 'Pausar' : 'Hebreo'} active={audio.currentTrack === 'hebrew'} onClick={() => audio.playTrack('hebrew')} />
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                 <span style={{ fontSize: '0.8rem', opacity: 0.7 }}>Volumen</span>
