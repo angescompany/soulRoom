@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaBookOpen, FaStar } from 'react-icons/fa';
+import { Calendar } from 'lucide-react';
 import BeginnerGuides from '../Home/BeginnerGuides';
 import TopicsOfInterest from '../Topics/TopicsOfInterest';
 import VersesByTopic from './VersesByTopic';
@@ -22,7 +23,7 @@ const ReadingDashboard = () => {
                     className="glass-card"
                     style={{
                         padding: '30px',
-                        marginBottom: '30px',
+                        marginBottom: '20px',
                         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                         display: 'flex',
                         flexDirection: 'column',
@@ -58,6 +59,30 @@ const ReadingDashboard = () => {
                         right: '-20px',
                         bottom: '-40px',
                         fontSize: '10rem',
+                        opacity: 0.1,
+                        color: 'white',
+                        transform: 'rotate(-15deg)'
+                    }} />
+                </div>
+
+                {/* Bible Timeline Access Card */}
+                <div
+                    onClick={() => navigate('/bible-timeline')}
+                    className="timeline-access-card glass-card"
+                >
+                    <div className="timeline-access-icon">
+                        <Calendar size={28} />
+                    </div>
+                    <h3>Cronología Bíblica</h3>
+                    <p>Explora la historia bíblica fase por fase</p>
+
+                    {/* Decorative Background Icon */}
+                    <Calendar style={{
+                        position: 'absolute',
+                        right: '-15px',
+                        bottom: '-30px',
+                        width: '120px',
+                        height: '120px',
                         opacity: 0.1,
                         color: 'white',
                         transform: 'rotate(-15deg)'

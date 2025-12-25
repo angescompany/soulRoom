@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 
-// Import audio files
-import hebrewMusicFile from '../assets/Fondo Musical para orar.mp3';
-import shofarMusicFile from '../assets/Shofar guerra espiritual.mp3';
+// Firebase Storage URLs for audio files
+const hebrewMusicFile = 'https://firebasestorage.googleapis.com/v0/b/soulroom-74c97.firebasestorage.app/o/Fondo%20Musical%20para%20orar.mp3?alt=media';
+const shofarMusicFile = 'https://firebasestorage.googleapis.com/v0/b/soulroom-74c97.firebasestorage.app/o/Shofar%20guerra%20espiritual.mp3?alt=media&token=95900420-b89a-467f-bff3-2b2dd7936edb';
 
 export const useAudio = () => {
     const audioCtxRef = useRef(null);
