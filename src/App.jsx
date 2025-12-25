@@ -6,6 +6,7 @@ import Fasting from './components/Features/Fasting/Fasting';
 import Prayer from './components/Features/Prayer/Prayer';
 import Bible from './components/Features/Bible/Bible';
 import ReadingDashboard from './components/Features/Bible/ReadingDashboard';
+import TimelinePeriodSelector from './components/Features/Bible/TimelinePeriodSelector';
 import VerticalBibleTimeline from './components/Features/Bible/VerticalBibleTimeline';
 import Profile from './components/Features/Profile/Profile';
 import PWAInstallPrompt from './components/Shared/PWAInstallPrompt';
@@ -30,7 +31,8 @@ const AppContent = () => {
           <Route path="/prayer" element={<Prayer />} />
           <Route path="/read" element={<ReadingDashboard />} />
           <Route path="/bible" element={<Bible />} />
-          <Route path="/bible-timeline" element={<VerticalBibleTimeline />} />
+          <Route path="/bible-timeline" element={<TimelinePeriodSelector />} />
+          <Route path="/bible-timeline/:periodId" element={<VerticalBibleTimeline />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

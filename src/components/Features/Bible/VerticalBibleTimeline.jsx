@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Virtuoso } from 'react-virtuoso';
 import { ArrowLeft, Crown, Flame, BookOpen, Swords } from 'lucide-react';
 import clsx from 'clsx';
+import { getEventsByPeriod, getPeriodById } from './timelineData';
 
 /**
  * @typedef {Object} TimelineEvent
@@ -17,233 +18,13 @@ import clsx from 'clsx';
  * @property {string} [biblicalRef] - Bible reference
  */
 
-// Sample data for the Divided Kingdom period
-const timelineData = [
-    {
-        id: "ev1",
-        year: 931,
-        type: "split",
-        title: "El Reino se Divide",
-        description: "Roboam y Jeroboam separan las tribus.",
-        biblicalRef: "1 Reyes 12"
-    },
-    {
-        id: "k_israel_1",
-        startYear: 931,
-        endYear: 910,
-        type: "israel",
-        kingdom: "israel",
-        title: "Jeroboam I",
-        description: "Primer rey del norte. Hizo dos becerros de oro.",
-        biblicalRef: "1 Reyes 12:20"
-    },
-    {
-        id: "k_judah_1",
-        startYear: 931,
-        endYear: 913,
-        type: "judah",
-        kingdom: "judah",
-        title: "Roboam",
-        description: "Hijo de Salomón. Rey del sur.",
-        biblicalRef: "1 Reyes 14:21"
-    },
-    {
-        id: "k_judah_2",
-        startYear: 913,
-        endYear: 911,
-        type: "judah",
-        kingdom: "judah",
-        title: "Abías",
-        description: "Breve reinado, victorioso contra Israel.",
-        biblicalRef: "1 Reyes 15:1-8"
-    },
-    {
-        id: "k_israel_2",
-        startYear: 910,
-        endYear: 909,
-        type: "israel",
-        kingdom: "israel",
-        title: "Nadab",
-        description: "Hijo de Jeroboam, asesinado por Baasa.",
-        biblicalRef: "1 Reyes 15:25-28"
-    },
-    {
-        id: "k_judah_3",
-        startYear: 911,
-        endYear: 870,
-        type: "judah",
-        kingdom: "judah",
-        title: "Asa",
-        description: "Rey piadoso que quitó los ídolos.",
-        biblicalRef: "1 Reyes 15:9-24"
-    },
-    {
-        id: "k_israel_3",
-        startYear: 909,
-        endYear: 886,
-        type: "israel",
-        kingdom: "israel",
-        title: "Baasa",
-        description: "Usurpó el trono, hizo lo malo.",
-        biblicalRef: "1 Reyes 15:27-34"
-    },
-    {
-        id: "k_israel_4",
-        startYear: 886,
-        endYear: 885,
-        type: "israel",
-        kingdom: "israel",
-        title: "Ela",
-        description: "Hijo de Baasa, asesinado por Zimri.",
-        biblicalRef: "1 Reyes 16:8-10"
-    },
-    {
-        id: "k_israel_5",
-        startYear: 885,
-        endYear: 885,
-        type: "israel",
-        kingdom: "israel",
-        title: "Zimri",
-        description: "Reinó solo 7 días, se suicidó.",
-        biblicalRef: "1 Reyes 16:15-20"
-    },
-    {
-        id: "k_israel_6",
-        startYear: 885,
-        endYear: 874,
-        type: "israel",
-        kingdom: "israel",
-        title: "Omri",
-        description: "Fundó Samaria como capital.",
-        biblicalRef: "1 Reyes 16:23-28"
-    },
-    {
-        id: "k_israel_7",
-        startYear: 874,
-        endYear: 853,
-        type: "israel",
-        kingdom: "israel",
-        title: "Acab",
-        description: "Casado con Jezabel, introdujo el culto a Baal.",
-        biblicalRef: "1 Reyes 16:29-22:40"
-    },
-    {
-        id: "p_elijah",
-        year: 870,
-        type: "prophet",
-        title: "Profeta Elías",
-        description: "Ministerio profético contra el culto a Baal. Confrontación en el Monte Carmelo.",
-        biblicalRef: "1 Reyes 17-19"
-    },
-    {
-        id: "k_judah_4",
-        startYear: 870,
-        endYear: 848,
-        type: "judah",
-        kingdom: "judah",
-        title: "Josafat",
-        description: "Rey piadoso, aliado con Israel.",
-        biblicalRef: "1 Reyes 22:41-50"
-    },
-    {
-        id: "k_israel_8",
-        startYear: 853,
-        endYear: 852,
-        type: "israel",
-        kingdom: "israel",
-        title: "Ocozías",
-        description: "Hijo de Acab, murió por una caída.",
-        biblicalRef: "1 Reyes 22:51 - 2 Reyes 1"
-    },
-    {
-        id: "k_israel_9",
-        startYear: 852,
-        endYear: 841,
-        type: "israel",
-        kingdom: "israel",
-        title: "Joram",
-        description: "Hermano de Ocozías, asesinado por Jehú.",
-        biblicalRef: "2 Reyes 3:1-9:26"
-    },
-    {
-        id: "p_elisha",
-        year: 850,
-        type: "prophet",
-        title: "Profeta Eliseo",
-        description: "Sucesor de Elías, realizó muchos milagros.",
-        biblicalRef: "2 Reyes 2-13"
-    },
-    {
-        id: "k_judah_5",
-        startYear: 848,
-        endYear: 841,
-        type: "judah",
-        kingdom: "judah",
-        title: "Joram de Judá",
-        description: "Casado con hija de Acab, hizo lo malo.",
-        biblicalRef: "2 Reyes 8:16-24"
-    },
-    {
-        id: "k_judah_6",
-        startYear: 841,
-        endYear: 841,
-        type: "judah",
-        kingdom: "judah",
-        title: "Ocozías de Judá",
-        description: "Reinó un año, asesinado por Jehú.",
-        biblicalRef: "2 Reyes 8:25-9:29"
-    },
-    {
-        id: "battle_jehu",
-        year: 841,
-        type: "battle",
-        title: "Revolución de Jehú",
-        description: "Jehú mata a los reyes de Israel y Judá.",
-        biblicalRef: "2 Reyes 9-10"
-    },
-    {
-        id: "k_israel_10",
-        startYear: 841,
-        endYear: 814,
-        type: "israel",
-        kingdom: "israel",
-        title: "Jehú",
-        description: "Ungido por Eliseo, destruyó el culto a Baal.",
-        biblicalRef: "2 Reyes 9-10"
-    },
-    {
-        id: "k_judah_7",
-        startYear: 841,
-        endYear: 835,
-        type: "judah",
-        kingdom: "judah",
-        title: "Atalía",
-        description: "Única reina, usurpó el trono.",
-        biblicalRef: "2 Reyes 11:1-16"
-    },
-    {
-        id: "k_judah_8",
-        startYear: 835,
-        endYear: 796,
-        type: "judah",
-        kingdom: "judah",
-        title: "Joás de Judá",
-        description: "Restauró el templo en su juventud.",
-        biblicalRef: "2 Reyes 11:21-12:21"
-    }
-];
-
-// Sort events by year for proper timeline order
-const sortedData = [...timelineData].sort((a, b) => {
-    const yearA = a.year || a.startYear;
-    const yearB = b.year || b.startYear;
-    return yearB - yearA; // Descending (older events first visually)
-});
-
-const EventCard = ({ event, onSelect }) => {
+const EventCard = ({ event, onSelect, periodId }) => {
     const isIsrael = event.kingdom === 'israel' || event.type === 'israel';
     const isJudah = event.kingdom === 'judah' || event.type === 'judah';
     const isCentral = event.type === 'split' || event.type === 'prophet' || event.type === 'battle';
+
+    // For periods other than divided-kingdom, use single-column layout
+    const isDividedKingdom = periodId === 'divided-kingdom' || periodId === 'united-kingdom';
 
     const getIcon = () => {
         switch (event.type) {
@@ -255,21 +36,33 @@ const EventCard = ({ event, onSelect }) => {
     };
 
     const getYearDisplay = () => {
-        if (event.year) return `${event.year} a.C.`;
+        if (event.year) {
+            if (event.year <= 0) {
+                return event.year < 0 ? `${Math.abs(event.year)} a.C.` : 'Futuro';
+            }
+            return event.year > 100 ? `${event.year} a.C.` : `${event.year} d.C.`;
+        }
         if (event.startYear && event.endYear) {
-            return `${event.startYear} - ${event.endYear} a.C.`;
+            const suffix = event.startYear > 100 ? 'a.C.' : 'd.C.';
+            return `${event.startYear} - ${event.endYear} ${suffix}`;
         }
         return '';
     };
 
+    // Determine card style based on period and event type
+    const getCardClass = () => {
+        if (isDividedKingdom) {
+            if (isIsrael) return 'timeline-card-israel';
+            if (isJudah) return 'timeline-card-judah';
+            if (isCentral) return 'timeline-card-central';
+        }
+        // For other periods, use central style
+        return 'timeline-card-central';
+    };
+
     return (
         <div
-            className={clsx(
-                'timeline-card',
-                isIsrael && 'timeline-card-israel',
-                isJudah && 'timeline-card-judah',
-                isCentral && 'timeline-card-central'
-            )}
+            className={clsx('timeline-card', getCardClass())}
             onClick={() => onSelect(event)}
         >
             <div className="timeline-card-header">
@@ -288,16 +81,36 @@ const EventCard = ({ event, onSelect }) => {
     );
 };
 
-const TimelineRow = ({ event, onSelect }) => {
+const TimelineRow = ({ event, onSelect, periodId }) => {
     const isIsrael = event.kingdom === 'israel' || event.type === 'israel';
     const isJudah = event.kingdom === 'judah' || event.type === 'judah';
     const isCentral = event.type === 'split' || event.type === 'prophet' || event.type === 'battle';
 
+    // Only use 3-column layout for divided-kingdom and united-kingdom
+    const isDividedKingdom = periodId === 'divided-kingdom' || periodId === 'united-kingdom';
+
+    if (!isDividedKingdom) {
+        // Single column layout for most periods
+        return (
+            <div className="timeline-row timeline-row-single">
+                <div className="timeline-col timeline-col-center">
+                    <div className="timeline-axis">
+                        <div className="timeline-axis-dot" />
+                    </div>
+                </div>
+                <div className="timeline-col timeline-col-content">
+                    <EventCard event={event} onSelect={onSelect} periodId={periodId} />
+                </div>
+            </div>
+        );
+    }
+
+    // 3-column layout for divided kingdom
     return (
         <div className="timeline-row">
             {/* Israel Column (Left) */}
             <div className="timeline-col timeline-col-left">
-                {isIsrael && <EventCard event={event} onSelect={onSelect} />}
+                {isIsrael && <EventCard event={event} onSelect={onSelect} periodId={periodId} />}
             </div>
 
             {/* Central Axis */}
@@ -305,12 +118,12 @@ const TimelineRow = ({ event, onSelect }) => {
                 <div className="timeline-axis">
                     <div className="timeline-axis-dot" />
                 </div>
-                {isCentral && <EventCard event={event} onSelect={onSelect} />}
+                {isCentral && <EventCard event={event} onSelect={onSelect} periodId={periodId} />}
             </div>
 
             {/* Judah Column (Right) */}
             <div className="timeline-col timeline-col-right">
-                {isJudah && <EventCard event={event} onSelect={onSelect} />}
+                {isJudah && <EventCard event={event} onSelect={onSelect} periodId={periodId} />}
             </div>
         </div>
     );
@@ -318,17 +131,40 @@ const TimelineRow = ({ event, onSelect }) => {
 
 const VerticalBibleTimeline = () => {
     const navigate = useNavigate();
+    const { periodId } = useParams();
     const [selectedEvent, setSelectedEvent] = useState(null);
+
+    // Get period info and events
+    const period = getPeriodById(periodId);
+    const events = getEventsByPeriod(periodId);
+
+    // Check if this period uses 3-column layout
+    const isDividedKingdom = periodId === 'divided-kingdom' || periodId === 'united-kingdom';
 
     const handleEventSelect = (event) => {
         setSelectedEvent(event);
-        // Future: Open Bottom Sheet with event details
         console.log('Event selected:', event);
     };
 
     const handleBack = () => {
-        navigate('/read');
+        navigate('/bible-timeline');
     };
+
+    // If period not found, show error
+    if (!period) {
+        return (
+            <div className="timeline-container">
+                <header className="timeline-header">
+                    <button className="timeline-back-btn" onClick={handleBack}>
+                        <ArrowLeft size={24} />
+                    </button>
+                    <div className="timeline-header-content">
+                        <h1>Período no encontrado</h1>
+                    </div>
+                </header>
+            </div>
+        );
+    }
 
     return (
         <div className="timeline-container">
@@ -338,38 +174,46 @@ const VerticalBibleTimeline = () => {
                     <ArrowLeft size={24} />
                 </button>
                 <div className="timeline-header-content">
-                    <h1>Cronología Bíblica</h1>
-                    <p>El Reino Dividido (931-586 a.C.)</p>
+                    <h1>{period.title}</h1>
+                    <p>{period.dateRange}</p>
                 </div>
             </header>
 
-            {/* Kingdom Labels */}
-            <div className="timeline-labels">
-                <div className="timeline-label timeline-label-israel">
-                    <span>Israel (Norte)</span>
+            {/* Kingdom Labels - only for divided kingdom */}
+            {isDividedKingdom && (
+                <div className="timeline-labels">
+                    <div className="timeline-label timeline-label-israel">
+                        <span>Israel (Norte)</span>
+                    </div>
+                    <div className="timeline-label timeline-label-center">
+                        <span>Eje</span>
+                    </div>
+                    <div className="timeline-label timeline-label-judah">
+                        <span>Judá (Sur)</span>
+                    </div>
                 </div>
-                <div className="timeline-label timeline-label-center">
-                    <span>Eje</span>
-                </div>
-                <div className="timeline-label timeline-label-judah">
-                    <span>Judá (Sur)</span>
-                </div>
+            )}
+
+            {/* Event count indicator */}
+            <div className="timeline-event-count">
+                <span>{events.length} eventos</span>
             </div>
 
             {/* Virtualized Timeline */}
             <Virtuoso
                 className="timeline-list"
-                data={sortedData}
+                data={events}
                 itemContent={(index, event) => (
                     <TimelineRow
                         key={event.id}
                         event={event}
                         onSelect={handleEventSelect}
+                        periodId={periodId}
                     />
                 )}
             />
 
-            {/* Event Detail Modal (Simple version for now) */}
+            {/* Event Detail Modal */}
             {selectedEvent && (
                 <div className="timeline-modal-overlay" onClick={() => setSelectedEvent(null)}>
                     <div className="timeline-modal" onClick={(e) => e.stopPropagation()}>
