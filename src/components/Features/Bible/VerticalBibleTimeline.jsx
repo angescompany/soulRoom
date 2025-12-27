@@ -211,6 +211,9 @@ const VerticalBibleTimeline = () => {
                         periodId={periodId}
                     />
                 )}
+                components={{
+                    Footer: () => <div style={{ height: '120px' }} />
+                }}
             />
 
             {/* Event Detail Modal */}

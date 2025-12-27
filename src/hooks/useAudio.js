@@ -194,14 +194,18 @@ export const useAudio = () => {
         }
     };
 
-    const setVolumeLevel = (val) => {
-        setVolume(val);
+    // Watch volume changes and apply them
+    useEffect(() => {
         if (gainNodeRef.current && audioCtxRef.current) {
-            gainNodeRef.current.gain.setValueAtTime(val, audioCtxRef.current.currentTime);
+            gainNodeRef.current.gain.setValueAtTime(volume, audioCtxRef.current.currentTime);
         }
         if (htmlAudioRef.current) {
-            htmlAudioRef.current.volume = val;
+            htmlAudioRef.current.volume = volume;
         }
+    }, [volume]);
+
+    const setVolumeLevel = (val) => {
+        setVolume(val);
     };
 
     // Cleanup on unmount

@@ -495,23 +495,79 @@ const eventsByPeriod = {
             type: 'israel',
             kingdom: 'israel',
             title: 'Rey Saúl',
-            description: 'Primer rey de Israel, benjamita, alto y guapo.',
-            biblicalRef: '1 Samuel 9-31'
+            description: 'Primer rey de Israel, ungido por Samuel.',
+            biblicalRef: '1 Samuel 9-10'
+        },
+        {
+            id: 'uk_saul_1',
+            year: 1048,
+            type: 'battle',
+            title: 'Victoria en Jabes-galaad',
+            description: 'Saúl derrota a los amonitas confirmando su reinado.',
+            biblicalRef: '1 Samuel 11'
+        },
+        {
+            id: 'uk_saul_2',
+            year: 1041,
+            type: 'split',
+            title: 'Sacrificio Ilegal de Saúl',
+            description: 'Saúl desobedece ofreciendo holocausto sin Samuel.',
+            biblicalRef: '1 Samuel 13'
+        },
+        {
+            id: 'uk_saul_3',
+            year: 1040,
+            type: 'battle',
+            title: 'Jonatán y su Paje',
+            description: 'Valiente ataque de Jonatán contra los filisteos.',
+            biblicalRef: '1 Samuel 14'
+        },
+        {
+            id: 'uk_saul_4',
+            year: 1028,
+            type: 'split',
+            title: 'Rechazo de Saúl',
+            description: 'Saúl perdona al rey Agag desobedeciendo a Dios.',
+            biblicalRef: '1 Samuel 15'
+        },
+        {
+            id: 'uk_david_1',
+            year: 1025,
+            type: 'prophet',
+            title: 'David es Ungido',
+            description: 'Samuel unge a David en Belén secretamente.',
+            biblicalRef: '1 Samuel 16'
         },
         {
             id: 'uk3',
-            year: 1025,
+            year: 1024,
             type: 'battle',
             title: 'David y Goliat',
             description: 'El joven David mata al gigante filisteo.',
             biblicalRef: '1 Samuel 17'
         },
         {
+            id: 'uk_david_2',
+            year: 1020,
+            type: 'split',
+            title: 'Saúl Persigue a David',
+            description: 'David huye al desierto por los celos de Saúl.',
+            biblicalRef: '1 Samuel 19-23'
+        },
+        {
+            id: 'uk_david_3',
+            year: 1012,
+            type: 'prophet',
+            title: 'David Perdona a Saúl',
+            description: 'David perdona la vida de Saúl en la cueva.',
+            biblicalRef: '1 Samuel 24'
+        },
+        {
             id: 'uk4',
             year: 1010,
             type: 'battle',
             title: 'Muerte de Saúl',
-            description: 'Saúl muere en batalla contra los filisteos.',
+            description: 'Saúl y sus hijos mueren en el Monte Gilboa.',
             biblicalRef: '1 Samuel 31'
         },
         {
@@ -521,24 +577,56 @@ const eventsByPeriod = {
             type: 'judah',
             kingdom: 'judah',
             title: 'Rey David',
-            description: 'El hombre conforme al corazón de Dios.',
-            biblicalRef: '2 Samuel; 1 Crónicas'
+            description: 'Reina 7 años en Hebrón y 33 en Jerusalén.',
+            biblicalRef: '2 Samuel 2-5'
         },
         {
             id: 'uk6',
-            year: 1000,
+            year: 1003,
             type: 'split',
             title: 'Jerusalén Capital',
-            description: 'David conquista Jerusalén y la hace capital.',
-            biblicalRef: '2 Samuel 5:6-10'
+            description: 'David conquista Jebús (Jerusalén) y la hace capital.',
+            biblicalRef: '2 Samuel 5'
+        },
+        {
+            id: 'uk_david_4',
+            year: 1000,
+            type: 'prophet',
+            title: 'El Arca en Jerusalén',
+            description: 'David trae el Arca del Pacto con alegría.',
+            biblicalRef: '2 Samuel 6'
         },
         {
             id: 'uk7',
-            year: 995,
+            year: 998,
             type: 'prophet',
             title: 'Pacto Davídico',
-            description: 'Dios promete a David un trono eterno.',
+            description: 'Dios promete a David un reino eterno.',
             biblicalRef: '2 Samuel 7'
+        },
+        {
+            id: 'uk_david_5',
+            year: 993,
+            type: 'battle',
+            title: 'David y Betsabé',
+            description: 'Pecado de David y asesinato de Urías.',
+            biblicalRef: '2 Samuel 11'
+        },
+        {
+            id: 'uk_david_6',
+            year: 992,
+            type: 'prophet',
+            title: 'Natán Reprende a David',
+            description: 'Arrepentimiento de David (Salmo 51).',
+            biblicalRef: '2 Samuel 12'
+        },
+        {
+            id: 'uk_david_7',
+            year: 979,
+            type: 'split',
+            title: 'Rebelión de Absalón',
+            description: 'El hijo de David usurpa el trono temporalmente.',
+            biblicalRef: '2 Samuel 15-18'
         },
         {
             id: 'uk8',
@@ -547,24 +635,56 @@ const eventsByPeriod = {
             type: 'judah',
             kingdom: 'judah',
             title: 'Rey Salomón',
-            description: 'El más sabio, construye el Templo.',
-            biblicalRef: '1 Reyes 1-11'
+            description: 'El reinado de paz y edad de oro de Israel.',
+            biblicalRef: '1 Reyes 1-2'
+        },
+        {
+            id: 'uk_solomon_1',
+            year: 967,
+            type: 'prophet',
+            title: 'Sabiduría de Salomón',
+            description: 'Dios concede a Salomón sabiduría sin igual.',
+            biblicalRef: '1 Reyes 3'
         },
         {
             id: 'uk9',
             year: 966,
             type: 'split',
             title: 'Construcción del Templo',
-            description: 'Salomón edifica el Templo de Jerusalén.',
-            biblicalRef: '1 Reyes 6-8'
+            description: 'Inicio de la obra magna en el Monte Moriah.',
+            biblicalRef: '1 Reyes 6'
+        },
+        {
+            id: 'uk_solomon_2',
+            year: 959,
+            type: 'prophet',
+            title: 'Dedicación del Templo',
+            description: 'La gloria de Dios llena el templo.',
+            biblicalRef: '1 Reyes 8'
         },
         {
             id: 'uk10',
             year: 950,
-            type: 'prophet',
+            type: 'split',
             title: 'Visita Reina de Sabá',
-            description: 'La reina viene a ver la sabiduría de Salomón.',
+            description: 'Fama mundial de la sabiduría y riqueza de Salomón.',
             biblicalRef: '1 Reyes 10'
+        },
+        {
+            id: 'uk_solomon_3',
+            year: 940,
+            type: 'split',
+            title: 'Apostasía de Salomón',
+            description: 'Sus muchas mujeres desvían su corazón.',
+            biblicalRef: '1 Reyes 11'
+        },
+        {
+            id: 'uk_solomon_4',
+            year: 932,
+            type: 'prophet',
+            title: 'Predicciones de Ruptura',
+            description: 'Ahías profetiza la división del reino.',
+            biblicalRef: '1 Reyes 11:26-40'
         }
     ],
     'divided-kingdom': [
@@ -884,7 +1004,7 @@ const eventsByPeriod = {
         },
         {
             id: 'j2',
-            year: -4,
+            year: -5,
             type: 'prophet',
             title: 'Visita de los Magos',
             description: 'Sabios del oriente adoran al niño Jesús.',
@@ -1225,12 +1345,27 @@ export const getPeriodById = (periodId) => {
  * Get events for a specific period
  */
 export const getEventsByPeriod = (periodId) => {
+    const period = getPeriodById(periodId);
     const events = eventsByPeriod[periodId] || [];
-    // Sort by year (descending for timeline display)
+
+    // Sort logic depends on testament/direction
+    // OT (BC): High numbers -> Low numbers (Descending magnitude means forward in time)
+    // NT (AD): Low numbers -> High numbers (Ascending value means forward in time)
+    // Jesus period uses mixed/negative for BC, so it acts like AD/Astronomical (Low -> High)
+
+    const isNewTestament = period?.testament === 'new';
+
     return [...events].sort((a, b) => {
         const yearA = a.year || a.startYear;
         const yearB = b.year || b.startYear;
-        return yearB - yearA;
+
+        if (isNewTestament) {
+            // Ascending (Oldest/Smallest first)
+            return yearA - yearB;
+        } else {
+            // Descending (Oldest/Largest first for BC)
+            return yearB - yearA;
+        }
     });
 };
 
